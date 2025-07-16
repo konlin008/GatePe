@@ -9,7 +9,8 @@ function App() {
     {
       path: '/',
       element: <MainLayOut />,
-      children: []
+      children: [
+      ]
     }
   ])
 
