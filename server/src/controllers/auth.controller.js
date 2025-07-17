@@ -1,10 +1,9 @@
-import bcrypt from "bcrypt";
 import prisma from "../../prisma/config/prismaClient.js";
 
 export const register = async (req, res) => {
   try {
-    const { email, firstName, lastName, password } = req.body;
-    if (!email || !firstName || !lastName || !password)
+    const { email, name, picture } = req.body;
+    if (!email || !name)
       return res.status(400).json({
         message: "All fields are Required",
       });
@@ -14,14 +13,15 @@ export const register = async (req, res) => {
       },
     });
     if (existingUser)
-      return res.status(400).json({ message: "User Alredy Registered" });
-    const hashedPassword = await bcrypt.hash(password, 10);
+      return res.json({
+        message: "User Alredy Registered",
+        user: existingUser,
+      });
     const newUser = await prisma.user.create({
       data: {
-        firstName,
-        lastName,
+        name,
         email,
-        password: hashedPassword,
+        profilePicture: picture,
       },
     });
     if (newUser)
