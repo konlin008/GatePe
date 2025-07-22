@@ -7,16 +7,6 @@ export const register = async (req, res) => {
       return res.status(400).json({
         message: "All fields are Required",
       });
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
-    if (existingUser)
-      return res.json({
-        message: "User Alredy Registered",
-        user: existingUser,
-      });
     const newUser = await prisma.user.create({
       data: {
         name,
@@ -32,6 +22,23 @@ export const register = async (req, res) => {
     console.log(error);
     res.status(500).json({
       message: "Something Went Wrong Internal Server",
+    });
+  }
+};
+export const check = async (req, res) => {
+  const { email } = req.body;
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!existingUser) {
+    return res.json({
+      exists: false,
+    });
+  } else {
+    return res.json({
+      exists: true,
     });
   }
 };
