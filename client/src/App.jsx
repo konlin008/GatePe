@@ -4,6 +4,7 @@ import { Button } from './components/ui/button'
 import MainLayOut from './layout/MainLayOut'
 import ForYou from './pages/userPages/ForYou'
 import Org from './pages/OrgPages/Org'
+import OrgRegistration from './pages/OrgPages/OrgRegistration'
 
 function App() {
 
@@ -19,9 +20,14 @@ function App() {
               <ForYou />
             </>
           )
-        }, {
+        },
+        {
           path: '/org',
           element: <Org />
+        },
+        {
+          path: '/org-registration',
+          element: <OrgRegistration />
         }
       ]
     }
