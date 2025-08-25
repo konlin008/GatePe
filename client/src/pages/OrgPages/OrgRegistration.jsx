@@ -7,13 +7,16 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+
+const handelRegister = (e) => {
+    e.preventDefault();
+
+}
 
 const OrgRegistration = () => {
     const navigate = useNavigate();
@@ -84,6 +87,18 @@ const OrgRegistration = () => {
                                 />
                             </div>
                             <div className="grid gap-2 ">
+                                <Label htmlFor="contact" className={"text-lg"}>
+                                    Contact Number
+                                </Label>
+                                <Input
+                                    id="contact"
+                                    type="text"
+                                    placeholder="0000011111"
+                                    required
+                                    className={"max-w-[30%] border-gray-400"}
+                                />
+                            </div>
+                            <div className="grid gap-2 ">
                                 <Label htmlFor="orgType" className={"text-lg"}>
                                     Organization Type
                                 </Label>
@@ -113,6 +128,7 @@ const OrgRegistration = () => {
                         <Button
                             className={"bg-blue-700 py-5 px-10 text-md"}
                             type={"submit"}
+                            onClick={handelRegister}
                         >
                             Submit
                         </Button>

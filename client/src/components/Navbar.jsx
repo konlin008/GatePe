@@ -62,7 +62,6 @@ const Navbar = () => {
     }, [user, isAuthenticated])
     const registerUser = async () => {
         try {
-            console.log(user.email);
             const result = await axios.post('http://localhost:8080/api/v1/auth/check', { email: user.email })
             if (!result?.data.exists) {
                 await axios.post("http://localhost:8080/api/v1/auth/register", {

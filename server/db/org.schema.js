@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
 const orgSchema = new mongoose.Schema({
-  ownerName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
   email: {
     type: String,
     required: true,
@@ -30,10 +25,6 @@ const orgSchema = new mongoose.Schema({
     required: true,
   },
   city: {
-    type: String,
-    required: true,
-  },
-  logoUrl: {
     type: String,
     required: true,
   },

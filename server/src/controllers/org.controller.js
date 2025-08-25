@@ -4,14 +4,12 @@ import Org from "../../db/org.schema.js";
 export const orgRegister = async (req, res) => {
   try {
     const {
-      ownerName,
       email,
       password,
       orgName,
       orgType,
       contactNo,
       city,
-      logoUrl,
     } = req.body;
     if (
       !email ||
@@ -19,8 +17,7 @@ export const orgRegister = async (req, res) => {
       !orgName ||
       !orgType ||
       !contactNo ||
-      !city ||
-      !logoUrl
+      !city 
     )
       return res
         .status(400)
@@ -32,14 +29,12 @@ export const orgRegister = async (req, res) => {
         .json({ success: false, message: "Email Already Registered" });
     const hashedPassword = await bcrypt.hash(password, 10);
     const newOrg = await Org.create({
-      ownerName,
       email,
       password: hashedPassword,
       orgName,
       orgType,
       contactNo,
       city,
-      logoUrl,
     });
     if (newOrg)
       return res.status(200).json({
