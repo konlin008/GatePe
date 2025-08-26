@@ -22,6 +22,8 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios'
 import NavbarFooter from './NavbarFooter'
+import { useUserStore } from '@/app/userStore'
+
 
 
 const indianCities = [
@@ -53,7 +55,14 @@ const Navbar = () => {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
     const { loginWithRedirect } = useAuth0();
+    const { logout } = useAuth0();
     const { user, isAuthenticated, isLoading } = useAuth0();
+
+
+    const logIn = useUserStore((state) => state.logIn);
+    const userdetails = useUserStore((state) => state.user)
+
+
 
     useEffect(() => {
         if (isAuthenticated && user) {
@@ -64,11 +73,17 @@ const Navbar = () => {
         try {
             const result = await axios.post('http://localhost:8080/api/v1/auth/check', { email: user.email })
             if (!result?.data.exists) {
-                await axios.post("http://localhost:8080/api/v1/auth/register", {
+                const res = await axios.post("http://localhost:8080/api/v1/auth/register", {
                     email: user.email,
                     name: user.name,
                     picture: user.picture
                 })
+                const userInfo = res?.data.userData
+                logIn(userInfo)
+            }
+            else {
+                const userInfo = result?.data.userData
+                logIn(userInfo)
             }
         } catch (error) {
             alert(error)
@@ -137,15 +152,18 @@ const Navbar = () => {
                         isAuthenticated ? (
                             <>
                                 <Avatar>
-                                    <AvatarImage src="https://github.com/shadcn.png" />
-                                    <AvatarFallback>CN</AvatarFallback>
+                                    {console.log(userdetails)}
+                                    <AvatarImage src={userdetails?.profilePicture || "https://github.com/shadcn.png"} />
+                                    <AvatarFallback>
+                                        {userdetails?.name?.[0] ?? "U"}
+                                    </AvatarFallback>
                                 </Avatar>
-                                {/* <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
-                                Logout
-                            </Button> */}
+                                <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                    Logout
+                                </Button>
                             </>
                         ) : (
-                            <>
+                            <> 
                                 <Button
                                     className={'bg-blue-600 hover:bg-blue-500'}
                                     onClick={() => loginWithRedirect()}

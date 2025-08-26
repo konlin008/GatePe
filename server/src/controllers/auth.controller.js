@@ -14,7 +14,11 @@ export const register = async (req, res) => {
     if (newUser)
       return res
         .status(200)
-        .json({ message: "User Registered Successfully", success: true });
+        .json({
+          message: "User Registered Successfully",
+          success: true,
+          userData: newUser,
+        });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -35,6 +39,7 @@ export const check = async (req, res) => {
     } else {
       return res.json({
         exists: true,
+        userData: existingUser,
       });
     }
   } catch (error) {
