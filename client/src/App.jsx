@@ -5,6 +5,7 @@ import MainLayOut from './layout/MainLayOut'
 import ForYou from './pages/userPages/ForYou'
 import Org from './pages/OrgPages/Org'
 import OrgRegistration from './pages/OrgPages/OrgRegistration'
+import OrganizeEvents from './pages/OrgPages/organizeEvents'
 
 function App() {
 
@@ -28,6 +29,9 @@ function App() {
         {
           path: '/org-registration',
           element: <OrgRegistration />
+        }, {
+          path: '/organize-events',
+          element: <OrganizeEvents />
         }
       ]
     }

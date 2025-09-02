@@ -9,28 +9,60 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
-import React from "react";
+import axios from "axios";
+import { ArrowLeft, Loader, Loader2 } from "lucide-react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-const handelRegister = (e) => {
-    e.preventDefault();
-
-}
 
 const OrgRegistration = () => {
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        orgName: '',
+        orgType: '',
+        contactNo: '',
+        city: ''
+    })
+    const [loading, setLoading] = useState()
+    const handelRegister = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading(true)
+            const res = await axios.post('http://localhost:8080/api/v1/auth/org-register', formData)
+            if (res?.data.success) {
+                toast.success(res.data.message, " Please Login")
+                navigate('/organize-events')
+            }
+            setLoading(false)
+        } catch (error) {
+            setLoading(false)
+            toast.error(error.response.data.message)
+        }
+    };
+    const handelOnChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData, [name]: value
+        })
+    }
     return (
-        <div className="min-h-screen px-60 py-20 bg-gradient-to-b from-purple-400  to-blue-200">
+        <div className="min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100">
             <div
                 className="border rounded-full w-fit p-2 border-black mb-10"
                 onClick={() => navigate("/org")}
             >
                 <ArrowLeft className="" />
             </div>
-            <Card className={"rounded-sm bg-gradient-to-r from-purple-200 to-white"}>
+            <Card
+                className={
+                    "rounded-sm bg-white"
+                }
+            >
                 <CardHeader>
-                    <CardTitle className={"text-xl"}>Register as Organization</CardTitle>
+                    <CardTitle className={"text-xl"}>Register as Organizar</CardTitle>
                     <CardDescription className={"text-md text-black"}>
                         Fill in the details below to begin your journey as an event
                         organizer with GatePe — manage events, sell tickets, and engage your
@@ -39,17 +71,20 @@ const OrgRegistration = () => {
                 </CardHeader>
                 <form>
                     <CardContent>
-                        <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="grid gap-2 ">
                                 <Label htmlFor="email" className={"text-lg"}>
                                     Email
                                 </Label>
                                 <Input
-                                    id="email"
                                     type="email"
                                     required
-                                    className={"max-w-[30%] border-gray-400"}
+                                    className={"w-full border-gray-400"}
                                     placeholder={"xyz@email.com"}
+                                    name='email'
+                                    value={formData.email}
+                                    onChange={handelOnChange}
+
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -57,33 +92,26 @@ const OrgRegistration = () => {
                                     Password
                                 </Label>
                                 <Input
-                                    id="password"
                                     type="password"
                                     required
-                                    className={"max-w-[30%] border-gray-400"}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="password" className={"text-lg"}>
-                                    Confirm Password
-                                </Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    className={"max-w-[30%] border-gray-400"}
+                                    className={"w-full border-gray-400"}
+                                    name='password'
+                                    value={formData.password}
+                                    onChange={handelOnChange}
                                 />
                             </div>
                             <div className="grid gap-2 ">
                                 <Label htmlFor="orgName" className={"text-lg"}>
-                                    Organization Name
+                                    Organizar Name
                                 </Label>
                                 <Input
-                                    id="orgName"
                                     type="text"
-                                    placeholder="xyz org"
+                                    placeholder="TechFest Club"
                                     required
-                                    className={"max-w-[30%] border-gray-400"}
+                                    className={"w-full border-gray-400"}
+                                    name='orgName'
+                                    value={formData.orgName}
+                                    onChange={handelOnChange}
                                 />
                             </div>
                             <div className="grid gap-2 ">
@@ -91,23 +119,27 @@ const OrgRegistration = () => {
                                     Contact Number
                                 </Label>
                                 <Input
-                                    id="contact"
                                     type="text"
-                                    placeholder="0000011111"
+                                    placeholder="9999988888"
                                     required
-                                    className={"max-w-[30%] border-gray-400"}
+                                    className={"w-full border-gray-400"}
+                                    name='contactNo'
+                                    value={formData.contactNo}
+                                    onChange={handelOnChange}
                                 />
                             </div>
                             <div className="grid gap-2 ">
                                 <Label htmlFor="orgType" className={"text-lg"}>
-                                    Organization Type
+                                    Type
                                 </Label>
                                 <Input
-                                    id="orgType"
                                     type="text"
-                                    placeholder="Event Agency"
+                                    placeholder="College"
                                     required
-                                    className={"max-w-[30%] border-gray-400"}
+                                    className={"w-full border-gray-400"}
+                                    name='orgType'
+                                    value={formData.orgType}
+                                    onChange={handelOnChange}
                                 />
                             </div>
                             <div className="grid gap-2 ">
@@ -115,22 +147,27 @@ const OrgRegistration = () => {
                                     City
                                 </Label>
                                 <Input
-                                    id="city"
                                     type="text"
-                                    placeholder="Event Agency"
+                                    placeholder="kolkata"
                                     required
-                                    className={"max-w-[30%] border-gray-400"}
+                                    className={"w-full border-gray-400"}
+                                    name='city'
+                                    value={formData.city}
+                                    onChange={handelOnChange}
                                 />
                             </div>
                         </div>
                     </CardContent>
                     <CardFooter className={"mt-10 flex justify-end"}>
+
                         <Button
-                            className={"bg-blue-700 py-5 px-10 text-md"}
+                            className={"bg-blue-700 hover:bg-blue-800 py-5 px-10 text-md"}
                             type={"submit"}
                             onClick={handelRegister}
-                        >
-                            Submit
+                            disabled={loading}
+                        >{
+                                loading ? <><Loader2 className="animate-spin" /> please wait</> : 'Submit'
+                            }
                         </Button>
                     </CardFooter>
                 </form>

@@ -11,6 +11,7 @@ const orgSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    select: false,
   },
   orgName: {
     type: String,

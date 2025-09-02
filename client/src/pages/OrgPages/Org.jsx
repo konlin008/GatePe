@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Film, Guitar, Handshake, ScanQrCode, Trophy, Users } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+
 
 const Org = () => {
     const navigate = useNavigate()
@@ -10,7 +12,7 @@ const Org = () => {
         navigate('/org-registration')
     }
     return (
-        <div className="min-h-screen px-100 py-20 bg-gradient-to-b from-fuchsia-100 via-blue-100 to-white ">
+        <div className="min-h-screen px-100 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100 ">
             <div className="flex flex-col items-center">
                 <h1 className="text-center font-semibold text-6xl">
                     What GatePe Supports?
@@ -83,12 +85,29 @@ const Org = () => {
                     </Card>
                 </div>
                 <div className="pt-10">
-                    <Button onClick={() => handelOnClick()} className={'rounded-sm py-7 px-10 bg-blue-600 hover:bg-blue-800 text-md'}>List Your Show</Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button className={'rounded-sm py-7 px-10 bg-blue-600 hover:bg-blue-800 text-md'}>List Your Show</Button>
+                        </DialogTrigger>
+                        <DialogContent className={'sm:max-w-[425px]'}>
+                            <DialogHeader>
+                                <DialogTitle>
+                                    Ready to Continue?
+                                </DialogTitle>
+                                <DialogDescription>
+                                    Choose an option below — log in if you already have an organization  account, or sign up to create a new one.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="flex flex-col space-y-2">
+                                <Button className={'bg-blue-700 hover:bg-blue-800'}>LogIn</Button>
+                                <Button onClick={() => handelOnClick()} className={'hover:bg-gray-300'} variant={'outline'}>SignUp</Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
 
         </div>
     );
 };
-
 export default Org;
