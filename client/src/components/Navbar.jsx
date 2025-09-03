@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Check, ChevronDown } from "lucide-react"
+import { Check, ChevronDown, Import } from "lucide-react"
 
 
 import { cn } from "@/lib/utils"
@@ -71,9 +71,9 @@ const Navbar = () => {
     }, [user, isAuthenticated])
     const registerUser = async () => {
         try {
-            const result = await axios.post('http://localhost:8080/api/v1/auth/check', { email: user.email })
+            const result = await axios.post(`${import.meta.env.VITE_USER_API}check `, { email: user.email })
             if (!result?.data.exists) {
-                const res = await axios.post("http://localhost:8080/api/v1/auth/register", {
+                const res = await axios.post(`${import.meta.env.VITE_USER_API}register`, {
                     email: user.email,
                     name: user.name,
                     picture: user.picture
@@ -163,7 +163,7 @@ const Navbar = () => {
                                 </Button>
                             </>
                         ) : (
-                            <> 
+                            <>
                                 <Button
                                     className={'bg-blue-600 hover:bg-blue-500'}
                                     onClick={() => loginWithRedirect()}

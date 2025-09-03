@@ -2,7 +2,9 @@ import React from 'react'
 
 const OrganizeEvents = () => {
     return (
-        <div>organizeEvents</div>
+        <div className='min-h-screen'>
+            organizeEvents
+        </div>
     )
 }
 

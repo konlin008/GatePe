@@ -31,7 +31,7 @@ const OrgRegistration = () => {
         e.preventDefault();
         try {
             setLoading(true)
-            const res = await axios.post('http://localhost:8080/api/v1/auth/org-register', formData)
+            const res = await axios.post(`${import.meta.env.VITE_ORG_API}org-register`, formData)
             if (res?.data.success) {
                 toast.success(res.data.message, " Please Login")
                 navigate('/organize-events')

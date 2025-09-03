@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import Org from "../../db/org.schema.js";
+import generateToken from "../../utils/generateToken.js";
 
 export const orgRegister = async (req, res) => {
   try {
@@ -52,11 +53,20 @@ export const orgLogin = async (req, res) => {
         message: "Email not registered",
       });
     else {
-      return res.status(200).json({
-        org,
-        success: true,
-        message: `welcome ${org?.orgName}`,
-      });
+      const token = generateToken(org);
+      return res
+        .status(200)
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "Lax",
+          maxAge: 24 * 60 * 60 * 1000,
+        })
+        .json({
+          org,
+          success: true,
+          message: `welcome ${org?.orgName}`,
+        });
     }
   } catch (error) {
     console.log(error);

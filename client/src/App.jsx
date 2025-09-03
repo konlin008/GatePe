@@ -1,11 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
-import { Button } from './components/ui/button'
 import MainLayOut from './layout/MainLayOut'
 import ForYou from './pages/userPages/ForYou'
 import Org from './pages/OrgPages/Org'
 import OrgRegistration from './pages/OrgPages/OrgRegistration'
 import OrganizeEvents from './pages/OrgPages/organizeEvents'
+import OrgLogin from './pages/OrgPages/OrgLogin'
 
 function App() {
 
@@ -29,8 +29,13 @@ function App() {
         {
           path: '/org-registration',
           element: <OrgRegistration />
-        }, {
-          path: '/organize-events',
+        },
+        {
+          path: '/org-login',
+          element: <OrgLogin />
+        },
+        {
+          path: '/organize-events/:orgId',
           element: <OrganizeEvents />
         }
       ]

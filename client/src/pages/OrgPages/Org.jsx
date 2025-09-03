@@ -99,7 +99,7 @@ const Org = () => {
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="flex flex-col space-y-2">
-                                <Button className={'bg-blue-700 hover:bg-blue-800'}>LogIn</Button>
+                                <Button onClick={() => { navigate('/org-login') }} className={'bg-blue-700 hover:bg-blue-800'}>LogIn</Button>
                                 <Button onClick={() => handelOnClick()} className={'hover:bg-gray-300'} variant={'outline'}>SignUp</Button>
                             </div>
                         </DialogContent>
