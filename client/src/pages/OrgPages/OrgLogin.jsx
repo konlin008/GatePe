@@ -25,10 +25,10 @@ const OrgLogin = () => {
         e.preventDefault()
         setLoading(true)
         try {
-            const res = await axios.post('http://localhost:8080/api/v1/org/login', formData, { withCredentials: true })
+            const res = await axios.post(`${import.meta.env.VITE_ORG_API}login`, formData, { withCredentials: true })
             if (res.data.success) {
                 setLoading(false)
-                navigate(`/organize-events/${res.data.org._id}`)
+                navigate(`/dashboard`)
                 toast.success(res.data.message)
             }
         } catch (error) {

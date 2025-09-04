@@ -6,6 +6,7 @@ import Org from './pages/OrgPages/Org'
 import OrgRegistration from './pages/OrgPages/OrgRegistration'
 import OrganizeEvents from './pages/OrgPages/organizeEvents'
 import OrgLogin from './pages/OrgPages/OrgLogin'
+import Dashboard from './pages/OrgPages/Dashboard'
 
 function App() {
 
@@ -23,8 +24,8 @@ function App() {
           )
         },
         {
-          path: '/org',
-          element: <Org />
+          path: '/Organizer',
+          element: <Org />,
         },
         {
           path: '/org-registration',
@@ -35,7 +36,11 @@ function App() {
           element: <OrgLogin />
         },
         {
-          path: '/organize-events/:orgId',
+          path: '/dashboard',
+          element: <Dashboard />
+        },
+        {
+          path: '/new-event',
           element: <OrganizeEvents />
         }
       ]

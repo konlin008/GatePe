@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
+    const navigate = useNavigate()
     const onClickHandler = (tabName) => {
         setActive(tabName);
+        navigate(`/${tabName}`)
     };
 
     return (
