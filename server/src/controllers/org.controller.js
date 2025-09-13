@@ -76,3 +76,39 @@ export const orgLogin = async (req, res) => {
     });
   }
 };
+export const listNewEvent = async (req, res) => {
+  try {
+    const {
+      title,
+      catagory,
+      description,
+      date,
+      time,
+      duration,
+      venue,
+      adress,
+    } = req.body;
+
+    if (
+      !title ||
+      !catagory ||
+      !description ||
+      !date ||
+      !time ||
+      !duration ||
+      !venue ||
+      !adress
+    )
+      return res.status(400).json({
+        success: false,
+        message: "All Fields are Required",
+      });
+      
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something Went Wrong",
+      success: false,
+    });
+  }
+};

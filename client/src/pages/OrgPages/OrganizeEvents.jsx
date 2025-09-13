@@ -6,7 +6,15 @@ import React, { useState } from 'react'
 
 const OrganizeEvents = () => {
     const [formData, setFormData] = useState({
-        eventTitle: '',
+        title: '',
+        catagory: '',
+        description: '',
+        date: '',
+        time: '',
+        duration: '',
+        venue: '',
+        adress: '',
+
     })
     const handelOnChange = (e) => {
 
@@ -25,22 +33,22 @@ const OrganizeEvents = () => {
                 <CardContent>
                     <div className="grid grid-cols-2 gap-6">
                         <div className="grid gap-2 ">
-                            <Label htmlFor="eventTitle" className={"text-lg"}>
+                            <Label htmlFor="title" className={"text-lg"}>
                                 Event Title
                             </Label>
                             <Input
                                 type="text"
                                 required
                                 className={"w-full border-gray-400"}
-                                placeholder={"comedy Night"}
-                                name='eventTitle'
-                                value={formData.eventTitle}
+                                placeholder={"3 Idiots"}
+                                name='title'
+                                value={formData.title}
                                 onChange={handelOnChange}
 
                             />
                         </div>
                         <div className="grid gap-2 ">
-                            <Label htmlFor="eventCatagory" className={"text-lg"}>
+                            <Label htmlFor="catagory" className={"text-lg"}>
                                 Event Catagory
                             </Label>
                             <Input
@@ -48,8 +56,8 @@ const OrganizeEvents = () => {
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"Movie"}
-                                name='eventCatagory'
-                                value={formData.eventCatagory}
+                                name='catagory'
+                                value={formData.catagory}
                                 onChange={handelOnChange}
 
                             />
@@ -70,15 +78,15 @@ const OrganizeEvents = () => {
                             />
                         </div>
                         <div className="grid gap-2 ">
-                            <Label htmlFor="eventDate" className={"text-lg"}>
+                            <Label htmlFor="date" className={"text-lg"}>
                                 Event Date
                             </Label>
                             <Input
                                 type="date"
                                 required
                                 className={"w-full border-gray-400"}
-                                name='eventDate'
-                                value={formData.eventDate}
+                                name='date'
+                                value={formData.date}
                                 onChange={handelOnChange}
 
                             />
@@ -188,7 +196,7 @@ const OrganizeEvents = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-6 my-10 pt-10 border-t-2">
                         <div className="grid gap-2 ">
-                            <Label htmlFor="adress" className={"text-lg"}>
+                            <Label htmlFor="landscapePoster" className={"text-lg"}>
                                 Event Poster (*landscape)
                             </Label>
                             <Input
@@ -196,13 +204,13 @@ const OrganizeEvents = () => {
                                 accept="image/*"
                                 required
                                 className={"w-full border-gray-400"}
-                                name='adress'
-                                value={formData.adress}
+                                name='landscapePoster'
+                                value={formData.landscapePoster}
                                 onChange={handelOnChange}
                             />
                         </div>
                         <div className="grid gap-2 ">
-                            <Label htmlFor="adress" className={"text-lg"}>
+                            <Label htmlFor="potraitPoster" className={"text-lg"}>
                                 Event Poster (*potrait)
                             </Label>
                             <Input
@@ -210,8 +218,8 @@ const OrganizeEvents = () => {
                                 accept="image/*"
                                 required
                                 className={"w-full border-gray-400"}
-                                name='adress'
-                                value={formData.adress}
+                                name='potraitPoster'
+                                value={formData.potraitPoster}
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -220,7 +228,7 @@ const OrganizeEvents = () => {
                 </CardContent>
                 <CardFooter>
                     <div className='flex justify-end w-full'>
-                        <Button className={"bg-blue-700 hover:bg-blue-800 py-5 px-10 text-md"}  
+                        <Button className={"bg-blue-700 hover:bg-blue-800 py-5 px-10 text-md"}
                         >
                             List Event
                         </Button>
