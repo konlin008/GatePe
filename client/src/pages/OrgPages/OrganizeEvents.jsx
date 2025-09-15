@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import axios from 'axios'
 import React, { useState } from 'react'
 
 const OrganizeEvents = () => {
@@ -14,10 +15,28 @@ const OrganizeEvents = () => {
         duration: '',
         venue: '',
         adress: '',
+        deadline: '',
+        image1: null,
+        image2: null,
 
     })
+    const [loading, setLoading] = useState(null)
     const handelOnChange = (e) => {
-
+        const { name, value, type, files } = e.target
+        setFormData({
+            ...formData, [name]: type === 'file' ? files[0] : value
+        })
+    }
+    const handelSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            const res = await axios.post(`${import.meta.env.VITE_ORG_API}create_new_event`, formData, { withCredentials: true })
+            if (res?.data) {
+                console.log(res.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100  to-white'>
@@ -174,8 +193,8 @@ const OrganizeEvents = () => {
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"30"}
-                                name='ticketQuantity'
-                                value={formData.ticketQuantity}
+                                name='deadline'
+                                value={formData.deadline}
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -203,9 +222,8 @@ const OrganizeEvents = () => {
                                 type="file"
                                 accept="image/*"
                                 required
+                                name='image1'
                                 className={"w-full border-gray-400"}
-                                name='landscapePoster'
-                                value={formData.landscapePoster}
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -218,8 +236,7 @@ const OrganizeEvents = () => {
                                 accept="image/*"
                                 required
                                 className={"w-full border-gray-400"}
-                                name='potraitPoster'
-                                value={formData.potraitPoster}
+                                name='image2'
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -228,7 +245,8 @@ const OrganizeEvents = () => {
                 </CardContent>
                 <CardFooter>
                     <div className='flex justify-end w-full'>
-                        <Button className={"bg-blue-700 hover:bg-blue-800 py-5 px-10 text-md"}
+                        <Button type={'submit'} className={"bg-blue-700 hover:bg-blue-800 py-5 px-10 text-md"}
+                            onClick={handelSubmit}
                         >
                             List Event
                         </Button>

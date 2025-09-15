@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import Org from "../../db/org.schema.js";
 import generateToken from "../../utils/generateToken.js";
+import { uploadMedia } from "../../utils/cloudinary.js";
+import Event from "../../db/event.schema.js";
 
 export const orgRegister = async (req, res) => {
   try {
@@ -76,6 +78,7 @@ export const orgLogin = async (req, res) => {
     });
   }
 };
+
 export const listNewEvent = async (req, res) => {
   try {
     const {
@@ -88,7 +91,8 @@ export const listNewEvent = async (req, res) => {
       venue,
       adress,
     } = req.body;
-
+    const files = req.files || {};
+    const { image1, image2 } = files;
     if (
       !title ||
       !catagory ||
@@ -97,13 +101,38 @@ export const listNewEvent = async (req, res) => {
       !time ||
       !duration ||
       !venue ||
-      !adress
+      !adress ||
+      !image1 ||
+      !image2
     )
       return res.status(400).json({
         success: false,
         message: "All Fields are Required",
       });
-      
+
+    const cloudeResImage1 = await uploadMedia(image1.path);
+    const image1Url = cloudeResImage1.secure_url;
+
+    const cloudeResImage2 = await uploadMedia(image2.path);
+    const image2Url = cloudeResImage2.secure_url;
+
+    const newEvent = await Event.create(
+      title,
+      catagory,
+      description,
+      date,
+      time,
+      duration,
+      venue,
+      adress,
+      image1Url,
+      image2Url
+    );
+    if (newEvent)
+      return res.status(200).json({
+        success: true,
+        newEvent,
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
