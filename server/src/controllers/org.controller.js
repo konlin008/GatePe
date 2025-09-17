@@ -60,8 +60,8 @@ export const orgLogin = async (req, res) => {
         .status(200)
         .cookie("token", token, {
           httpOnly: true,
-          secure: false,
-          sameSite: "Lax",
+          secure: true,
+          sameSite: "none",
           maxAge: 24 * 60 * 60 * 1000,
         })
         .json({
@@ -81,6 +81,7 @@ export const orgLogin = async (req, res) => {
 
 export const listNewEvent = async (req, res) => {
   try {
+    const orgId = req.id;
     const {
       title,
       catagory,
@@ -91,8 +92,11 @@ export const listNewEvent = async (req, res) => {
       venue,
       adress,
     } = req.body;
+
     const files = req.files || {};
-    const { image1, image2 } = files;
+    const image1 = files.image1 ? files.image1[0] : null;
+    const image2 = files.image2 ? files.image2[0] : null;
+
     if (
       !title ||
       !catagory ||
@@ -109,14 +113,13 @@ export const listNewEvent = async (req, res) => {
         success: false,
         message: "All Fields are Required",
       });
-
     const cloudeResImage1 = await uploadMedia(image1.path);
     const image1Url = cloudeResImage1.secure_url;
 
     const cloudeResImage2 = await uploadMedia(image2.path);
     const image2Url = cloudeResImage2.secure_url;
 
-    const newEvent = await Event.create(
+    const newEvent = await Event.create({
       title,
       catagory,
       description,
@@ -125,13 +128,15 @@ export const listNewEvent = async (req, res) => {
       duration,
       venue,
       adress,
-      image1Url,
-      image2Url
-    );
+      imageUrlLandscape: image1Url,
+      imageUrlPortrait: image2Url,
+      organizer: orgId,
+    });
+    console.log("Successfully created event.");
     if (newEvent)
       return res.status(200).json({
         success: true,
-        newEvent,
+        message: "Event Listed Successfully",
       });
   } catch (error) {
     console.log(error);

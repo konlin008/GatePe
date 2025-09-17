@@ -22,15 +22,29 @@ const OrganizeEvents = () => {
     })
     const [loading, setLoading] = useState(null)
     const handelOnChange = (e) => {
-        const { name, value, type, files } = e.target
+        const { name, value } = e.target
         setFormData({
-            ...formData, [name]: type === 'file' ? files[0] : value
+            ...formData, [name]: value
+        })
+    }
+    const onChangeImage = (e) => {
+        const { name, files } = e.target;
+        setFormData({
+            ...formData, [name]: files[0]
         })
     }
     const handelSubmit = async (e) => {
         e.preventDefault()
         try {
-            const res = await axios.post(`${import.meta.env.VITE_ORG_API}create_new_event`, formData, { withCredentials: true })
+            const data = new FormData();
+
+            Object.keys(formData).forEach((key) => {
+                if (formData[key]) {
+                    data.append(key, formData[key])
+                }
+            })
+            
+            const res = await axios.post(`${import.meta.env.VITE_ORG_API}create_new_event`, data, { withCredentials: true })
             if (res?.data) {
                 console.log(res.data);
             }
@@ -70,7 +84,7 @@ const OrganizeEvents = () => {
                             <Label htmlFor="catagory" className={"text-lg"}>
                                 Event Catagory
                             </Label>
-                            <Input
+                            <Input v
                                 type="text"
                                 required
                                 className={"w-full border-gray-400"}
@@ -224,7 +238,7 @@ const OrganizeEvents = () => {
                                 required
                                 name='image1'
                                 className={"w-full border-gray-400"}
-                                onChange={handelOnChange}
+                                onChange={onChangeImage}
                             />
                         </div>
                         <div className="grid gap-2 ">
@@ -237,7 +251,7 @@ const OrganizeEvents = () => {
                                 required
                                 className={"w-full border-gray-400"}
                                 name='image2'
-                                onChange={handelOnChange}
+                                onChange={onChangeImage}
                             />
                         </div>
 

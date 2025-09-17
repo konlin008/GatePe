@@ -4,6 +4,7 @@ import authRouter from "./src/routes/auth.routes.js";
 import orgRouter from "./src/routes/org.routes.js";
 import "dotenv/config";
 import connectDb from "./db/db.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(cookieParser());
 app.use(express.json());
 
 connectDb();

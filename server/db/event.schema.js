@@ -7,11 +7,11 @@ const eventSchema = new mongoose.Schema({
   },
   catagory: {
     type: String,
-    reuired: true,
+    required: true,
   },
   description: {
     type: String,
-    reuired: true,
+    required: true,
   },
   date: {
     type: Date,
@@ -23,15 +23,28 @@ const eventSchema = new mongoose.Schema({
   },
   duration: {
     type: String,
-    reuired: true,
+    required: true,
   },
   venue: {
     type: String,
-    reuired: true,
+    required: true,
   },
   adress: {
     type: String,
-    reuired: true,
+    required: true,
+  },
+  organizer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Org",
+    required: true,
+  },
+  imageUrlLandscape: {
+    type: String,
+    required: true,
+  },
+  imageUrlPortrait: {
+    type: String,
+    required: true,
   },
   createdAt: {
     type: Date,
