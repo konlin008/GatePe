@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getEventDetails,
   getEventsByOrgId,
   listNewEvent,
   orgLogin,
@@ -22,4 +23,5 @@ router.post(
   listNewEvent
 );
 router.get("/get_all_events", isAuthenticated, getEventsByOrgId);
+router.get("/get-event-details/:id", getEventDetails);
 export default router;

@@ -7,6 +7,7 @@ import OrgRegistration from './pages/OrgPages/OrgRegistration'
 import OrganizeEvents from './pages/OrgPages/organizeEvents'
 import OrgLogin from './pages/OrgPages/OrgLogin'
 import Dashboard from './pages/OrgPages/Dashboard'
+import EditEvent from './pages/OrgPages/EditEvent'
 
 function App() {
 
@@ -42,6 +43,10 @@ function App() {
         {
           path: '/new-event',
           element: <OrganizeEvents />
+        },
+        {
+          path: '/dashboard/editEvent/:eventId',
+          element: <EditEvent />
         }
       ]
     }

@@ -153,7 +153,7 @@ export const getEventsByOrgId = async (req, res) => {
     if (events?.length === 0)
       return res.status(202).json({
         message: "No Event Listed",
-        success: true,  
+        success: true,
       });
     return res.status(202).json({
       success: true,
@@ -163,6 +163,27 @@ export const getEventsByOrgId = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       message: "Something Went Wrong",
+      success: false,
+    });
+  }
+};
+export const getEventDetails = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const eventDetails = await Event.findOne({ _id: eventId });
+    if (!eventDetails)
+      return res.status(404).json({
+        message: "Event Not Found",
+        success: false,
+      });
+    return res.status(202).json({
+      eventDetails,
+      success: false,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error ",
       success: false,
     });
   }

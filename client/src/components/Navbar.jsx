@@ -94,7 +94,7 @@ const Navbar = () => {
     }
 
     return (
-        <nav className='sticky top-0 bg-white shadow-md'>
+        <nav className='sticky top-0 z-50 bg-white shadow-md'>
             <div className='h-18 w-full px-60   flex items-center justify-between sticky top-0'>
                 <div className='flex items-center space-x-10'>
                     <h1 className='font-semibold text-2xl'>Gate<span className='text-blue-500'>Pe</span></h1>

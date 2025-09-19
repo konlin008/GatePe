@@ -4,9 +4,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import axios from 'axios'
 import { Loader2 } from 'lucide-react'
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-const OrganizeEvents = () => {
+const EditEvent = () => {
+    const params = useParams()
+    const id = params.eventId
     const [formData, setFormData] = useState({
         title: '',
         catagory: '',
@@ -21,6 +24,35 @@ const OrganizeEvents = () => {
         image2: null,
 
     })
+    useEffect(() => {
+        try {
+            const fetchEvent = async () => {
+                const res = await axios.get(`${import.meta.env.VITE_ORG_API}get-event-details/${id}`)
+                if (res?.data) {
+                    const eventDetails = res.data.eventDetails
+                    console.log(eventDetails);
+                    setFormData({
+                        title: eventDetails.title || '',
+                        catagory: eventDetails.catagory || '',
+                        description: eventDetails.description || '',
+                        date: eventDetails.date || '',
+                        time: eventDetails.time || '',
+                        duration: eventDetails.duration || '',
+                        venue: eventDetails.venue || '',
+                        adress: eventDetails.adress || '',
+                        deadline: eventDetails.deadline || '',
+                        ticketPrice: eventDetails.ticketPrice || '',
+                        ticketQuantity: eventDetails.ticketQuantity || '',
+                        image1: null,
+                        image2: null,
+                    });
+                }
+            }
+            fetchEvent()
+        } catch (error) {
+            console.error(error);
+        }
+    }, [])
     const [loading, setLoading] = useState(null)
     const handelOnChange = (e) => {
         const { name, value } = e.target
@@ -274,6 +306,7 @@ const OrganizeEvents = () => {
             </Card>
         </div>
     )
+
 }
 
-export default OrganizeEvents;
+export default EditEvent
