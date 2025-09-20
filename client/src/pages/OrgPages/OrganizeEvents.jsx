@@ -17,10 +17,20 @@ const OrganizeEvents = () => {
         venue: '',
         adress: '',
         deadline: '',
+        ticketPrice: '',
+        ticketQuantity: null,
         image1: null,
         image2: null,
 
     })
+    const [imagePreviews, setImagePreviews] = useState({
+        image1: null,
+        image2: null,
+    });
+    const [imageWarnings, setImageWarnings] = useState({
+        image1: '',
+        image2: '',
+    });
     const [loading, setLoading] = useState(null)
     const handelOnChange = (e) => {
         const { name, value } = e.target
@@ -30,10 +40,40 @@ const OrganizeEvents = () => {
     }
     const onChangeImage = (e) => {
         const { name, files } = e.target;
-        setFormData({
-            ...formData, [name]: files[0]
-        })
-    }
+        if (files && files[0]) {
+            const file = files[0];
+            setFormData({
+                ...formData,
+                [name]: file,
+            });
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+                let warning = '';
+                const width = img.width;
+                const height = img.height;
+
+                if (name === 'image1') { // landscape
+                    if (width <= height) {
+                        warning = '⚠️ This should be a landscape image';
+                    }
+                } else if (name === 'image2') { // portrait
+                    if (height <= width) {
+                        warning = '⚠️ This should be a portrait image';
+                    }
+                }
+
+                setImageWarnings(prev => ({ ...prev, [name]: warning }));
+            };
+
+            setImagePreviews(prev => ({
+                ...prev,
+                [name]: URL.createObjectURL(file),
+            }));
+        }
+    };
+
     const handelSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
@@ -57,7 +97,7 @@ const OrganizeEvents = () => {
     }
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100  to-white'>
-            <Card className={'rounded-lg shadow-none border-none'}>
+            <Card className={'rounded-lg shadow-none border-none  bg-transparent'}>
                 <CardHeader>
                     <CardTitle className={'text-2xl'}>
                         Set Up Your Event
@@ -210,8 +250,8 @@ const OrganizeEvents = () => {
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"30"}
-                                name='deadline'
-                                value={formData.deadline}
+                                name='ticketQuantity'
+                                value={formData.ticketQuantity}
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -224,8 +264,9 @@ const OrganizeEvents = () => {
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"30"}
-                                name='ticketQuantity'
-                                value={formData.ticketQuantity}
+                                name='deadline'
+                                value={formData.deadline}
+
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -243,10 +284,21 @@ const OrganizeEvents = () => {
                                 className={"w-full border-gray-400"}
                                 onChange={onChangeImage}
                             />
+                            {imagePreviews.image1 && (
+                                <img
+                                    src={imagePreviews.image1}
+                                    alt="Landscape Preview"
+                                    className="mt-2 w-full h-48 object-contain border"
+                                />
+                            )}
+                            {imageWarnings.image1 && (
+                                <p className="text-red-600 mt-1">{imageWarnings.image1}</p>
+                            )}
                         </div>
+
                         <div className="grid gap-2 ">
                             <Label htmlFor="potraitPoster" className={"text-lg"}>
-                                Event Poster (*potrait)
+                                Event Poster (*portrait)
                             </Label>
                             <Input
                                 type="file"
@@ -256,6 +308,16 @@ const OrganizeEvents = () => {
                                 name='image2'
                                 onChange={onChangeImage}
                             />
+                            {imagePreviews.image2 && (
+                                <img
+                                    src={imagePreviews.image2}
+                                    alt="Portrait Preview"
+                                    className="mt-2 w-full h-48 object-contain border"
+                                />
+                            )}
+                            {imageWarnings.image2 && (
+                                <p className="text-red-600 mt-1">{imageWarnings.image2}</p>
+                            )}
                         </div>
 
                     </div>

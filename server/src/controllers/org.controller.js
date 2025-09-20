@@ -91,6 +91,9 @@ export const listNewEvent = async (req, res) => {
       duration,
       venue,
       adress,
+      deadline,
+      ticketPrice,
+      ticketQuantity,
     } = req.body;
 
     const files = req.files || {};
@@ -106,8 +109,11 @@ export const listNewEvent = async (req, res) => {
       !duration ||
       !venue ||
       !adress ||
+      !deadline ||
       !image1 ||
-      !image2
+      !image2 ||
+      !ticketPrice ||
+      !ticketQuantity
     )
       return res.status(400).json({
         success: false,
@@ -126,8 +132,11 @@ export const listNewEvent = async (req, res) => {
       date,
       time,
       duration,
+      deadline,
       venue,
       adress,
+      ticketPrice,
+      ticketQuantity,
       imageUrlLandscape: image1Url,
       imageUrlPortrait: image2Url,
       organizer: orgId,
@@ -185,6 +194,17 @@ export const getEventDetails = async (req, res) => {
     return res.status(500).json({
       message: "Internal Server Error ",
       success: false,
+    });
+  }
+};
+export const updateEventDetails = (req, res) => {
+  try {
+    const eventId = req.params;
+    
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      msg: "Internal Server Error",
     });
   }
 };

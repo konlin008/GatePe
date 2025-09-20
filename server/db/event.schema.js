@@ -21,6 +21,14 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  ticketPrice: {
+    type: String,
+    required: true,
+  },
+  ticketQuantity: {
+    type: Number,
+    required: true,
+  },
   duration: {
     type: String,
     required: true,
@@ -31,6 +39,10 @@ const eventSchema = new mongoose.Schema({
   },
   adress: {
     type: String,
+    required: true,
+  },
+  deadline: {
+    type: Date,
     required: true,
   },
   organizer: {

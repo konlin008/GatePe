@@ -20,9 +20,15 @@ const EditEvent = () => {
         venue: '',
         adress: '',
         deadline: '',
+        ticketPrice: '',
+        ticketQuantity: null,
         image1: null,
         image2: null,
 
+    })
+    const [preview, setPreview] = useState({
+        image1: null,
+        image2: null
     })
     useEffect(() => {
         try {
@@ -35,17 +41,21 @@ const EditEvent = () => {
                         title: eventDetails.title || '',
                         catagory: eventDetails.catagory || '',
                         description: eventDetails.description || '',
-                        date: eventDetails.date || '',
+                        date: eventDetails.date ? new Date(eventDetails.date).toISOString().split('T')[0] : '',
                         time: eventDetails.time || '',
                         duration: eventDetails.duration || '',
                         venue: eventDetails.venue || '',
                         adress: eventDetails.adress || '',
-                        deadline: eventDetails.deadline || '',
+                        deadline: eventDetails.deadline ? new Date(eventDetails.deadline).toISOString().split('T')[0] : '',
                         ticketPrice: eventDetails.ticketPrice || '',
                         ticketQuantity: eventDetails.ticketQuantity || '',
                         image1: null,
                         image2: null,
                     });
+                    setPreview({
+                        image1: eventDetails.imageUrlLandscape,
+                        image2: eventDetails.imageUrlPortrait
+                    })
                 }
             }
             fetchEvent()
@@ -59,13 +69,35 @@ const EditEvent = () => {
         setFormData({
             ...formData, [name]: value
         })
+
     }
+
     const onChangeImage = (e) => {
         const { name, files } = e.target;
-        setFormData({
-            ...formData, [name]: files[0]
-        })
-    }
+        if (files && files[0]) {
+            const file = files[0];
+            const img = new Image();
+
+            img.onload = () => {
+                const width = img.width;
+                const height = img.height;
+
+                if (name === "image1" && Math.abs(width / height - 16 / 9) > 0.01) {
+                    alert("Landscape image must be 16:9 ratio!");
+                    return;
+                }
+
+                if (name === "image2" && Math.abs(width / height - 9 / 16) > 0.01) {
+                    alert("Portrait image must be 9:16 ratio!");
+                    return;
+                }
+                setFormData({ ...formData, [name]: file });
+                setPreview({ ...preview, [name]: URL.createObjectURL(file) });
+            };
+            img.src = URL.createObjectURL(file);
+        }
+    };
+
     const handelSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
@@ -89,7 +121,7 @@ const EditEvent = () => {
     }
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100  to-white'>
-            <Card className={'rounded-lg shadow-none border-none'}>
+            <Card className={'rounded-lg shadow-none border-none  bg-transparent'}>
                 <CardHeader>
                     <CardTitle className={'text-2xl'}>
                         Set Up Your Event
@@ -242,8 +274,8 @@ const EditEvent = () => {
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"30"}
-                                name='deadline'
-                                value={formData.deadline}
+                                name='ticketQuantity'
+                                value={formData.ticketQuantity}
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -256,8 +288,8 @@ const EditEvent = () => {
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"30"}
-                                name='ticketQuantity'
-                                value={formData.ticketQuantity}
+                                name='deadline'
+                                value={formData.deadline}
                                 onChange={handelOnChange}
                             />
                         </div>
@@ -275,6 +307,9 @@ const EditEvent = () => {
                                 className={"w-full border-gray-400"}
                                 onChange={onChangeImage}
                             />
+                            {preview.image1 && (
+                                <img src={preview.image1} alt="Landscape Preview" className="w-64 h-auto rounded" />
+                            )}
                         </div>
                         <div className="grid gap-2 ">
                             <Label htmlFor="potraitPoster" className={"text-lg"}>
@@ -288,6 +323,9 @@ const EditEvent = () => {
                                 name='image2'
                                 onChange={onChangeImage}
                             />
+                            {preview.image2 && (
+                                <img src={preview.image2} alt="Portrait Preview" className="w-64 h-auto rounded" />
+                            )}
                         </div>
 
                     </div>
