@@ -72,7 +72,31 @@ const EditEvent = () => {
 
     }
 
-    
+    const onChangeImage = (e) => {
+        const { name, files } = e.target;
+        if (files && files[0]) {
+            const file = files[0];
+            const img = new Image();
+
+            img.onload = () => {
+                const width = img.width;
+                const height = img.height;
+
+                if (name === "image1" && Math.abs(width / height - 16 / 9) > 0.01) {
+                    alert("Landscape image must be 16:9 ratio!");
+                    return;
+                }
+
+                if (name === "image2" && Math.abs(width / height - 9 / 16) > 0.01) {
+                    alert("Portrait image must be 9:16 ratio!");
+                    return;
+                }
+                setFormData({ ...formData, [name]: file });
+                setPreview({ ...preview, [name]: URL.createObjectURL(file) });
+            };
+            img.src = URL.createObjectURL(file);
+        }
+    };
 
     const handelSubmit = async (e) => {
         e.preventDefault()
