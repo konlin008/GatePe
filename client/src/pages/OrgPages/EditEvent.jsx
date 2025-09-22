@@ -99,26 +99,35 @@ const EditEvent = () => {
     };
 
     const handelSubmit = async (e) => {
-        e.preventDefault()
-        setLoading(true)
+        e.preventDefault();
+        setLoading(true);
         try {
             const data = new FormData();
 
             Object.keys(formData).forEach((key) => {
-                if (formData[key]) {
-                    data.append(key, formData[key])
+                if (formData[key] !== null && formData[key] !== "") {
+                    data.append(key, formData[key]);
                 }
-            })
+            });
 
-            const res = await axios.post(`${import.meta.env.VITE_ORG_API}create_new_event`, data, { withCredentials: true })
+            const res = await axios.put(
+                `${import.meta.env.VITE_ORG_API}update-event/${id}`,
+                data,
+                {
+                    withCredentials: true,
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
+
             if (res?.data) {
-                console.log(res.data);
+                console.log(" Event updated:", res.data);
+
             }
         } catch (error) {
-            console.log(error);
+            console.error(" Error updating event:", error);
         }
-        setLoading(false)
-    }
+        setLoading(false);
+    };
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100  to-white'>
             <Card className={'rounded-lg shadow-none border-none  bg-transparent'}>

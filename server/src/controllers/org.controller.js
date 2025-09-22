@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import Org from "../../db/org.schema.js";
 import generateToken from "../../utils/generateToken.js";
-import { uploadMedia } from "../../utils/cloudinary.js";
+import { deleteMedia, uploadMedia } from "../../utils/cloudinary.js";
 import Event from "../../db/event.schema.js";
 
 export const orgRegister = async (req, res) => {
@@ -197,10 +197,51 @@ export const getEventDetails = async (req, res) => {
     });
   }
 };
-export const updateEventDetails = (req, res) => {
+export const updateEventDetails = async (req, res) => {
   try {
-    const eventId = req.params;
-    
+    const { id } = req.params;
+    const event = await Event.findById(id);
+    if (!event)
+      return res.status(404).json({
+        message: "Event Not Found",
+        success: false,
+      });
+    Object.keys(req.body).forEach((key) => {
+      if (req.body[key] !== undefined && req.body[key] !== null) {
+        event[key] = req.body[key];
+      }
+    });
+
+    const files = req.files || {};
+    if (files.image1 || files.image2) {
+      if (files.image1) {
+        const image1PublicId = event.imageUrlLandscape
+          ?.split("/")
+          .pop()
+          .split(".")[0];
+        if (image1PublicId) await deleteMedia(image1PublicId);
+
+        const cloudeResImage1 = await uploadMedia(files.image1[0].path);
+        event.imageUrlLandscape = cloudeResImage1.secure_url;
+      }
+
+      if (files.image2) {
+        const image2PublicId = event.imageUrlPortrait
+          ?.split("/")
+          .pop()
+          .split(".")[0];
+        if (image2PublicId) await deleteMedia(image2PublicId);
+
+        const cloudeResImage2 = await uploadMedia(files.image2[0].path);
+        event.imageUrlPortrait = cloudeResImage2.secure_url;
+      }
+    }
+    await event.save();
+    return res.status(200).json({
+      message: "Event Details updated successfully",
+      success: true,
+      event,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
