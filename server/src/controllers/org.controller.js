@@ -127,7 +127,7 @@ export const listNewEvent = async (req, res) => {
 
     const newEvent = await Event.create({
       title,
-      catagory,
+      category: catagory,
       description,
       date,
       time,

@@ -8,6 +8,8 @@ import OrganizeEvents from './pages/OrgPages/organizeEvents'
 import OrgLogin from './pages/OrgPages/OrgLogin'
 import Dashboard from './pages/OrgPages/Dashboard'
 import EditEvent from './pages/OrgPages/EditEvent'
+import Movies from './pages/userPages/Movies'
+import Sports from './pages/userPages/Sports'
 
 function App() {
 
@@ -18,11 +20,16 @@ function App() {
       children: [
         {
           path: '/',
-          element: (
-            <>
-              <ForYou />
-            </>
-          )
+          element: <ForYou />
+
+        },
+        {
+          path: '/Movies',
+          element: <Movies />
+        },
+        {
+          path: 'Sports',
+          element: <Sports />
         },
         {
           path: '/Organizer',

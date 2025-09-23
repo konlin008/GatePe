@@ -5,7 +5,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  catagory: {
+  category: {
     type: String,
     required: true,
   },
@@ -30,6 +30,10 @@ const eventSchema = new mongoose.Schema({
     required: true,
   },
   duration: {
+    type: String,
+    required: true,
+  },
+  city: {
     type: String,
     required: true,
   },
