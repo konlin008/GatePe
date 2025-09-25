@@ -1,13 +1,22 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { useLocationStore } from "@/app/locationStore";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Terminal } from "lucide-react";
 
 const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
     const navigate = useNavigate()
+    const location = useLocationStore((state) => state.location)
     const onClickHandler = (tabName) => {
-        setActive(tabName);
-        navigate(`/${tabName}`)
+        if (!location) {
+            alert("Select Location")
+        } else {
+            setActive(tabName);
+            navigate(`/${tabName}`)
+        }
+
     };
 
     return (

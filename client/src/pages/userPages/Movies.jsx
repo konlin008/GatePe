@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react'
 import EventCard from '@/components/EventCard'
 import axios from 'axios'
+import { useLocationStore } from '@/app/locationStore'
 
 const Movies = () => {
+    const location = useLocationStore((state) => state.location)
     useEffect(() => {
         try {
             const fetchEvents = async () => {
-                const res = await axios.get(`${import.meta.env.VITE_EVENT_API}`)
+                const res = await axios.get(`${import.meta.env.VITE_EVENT_API}getEventsByCatgory?category=movie&location=${location}`)
+                console.log(res.data);
             }
             fetchEvents()
         } catch (error) {
@@ -20,7 +23,7 @@ const Movies = () => {
                 <div className='flex space-x-10'>
                     {
                         [1, 2, 3, 4].map(() => {
-                            return (<>
+                            return (<>  
                                 <EventCard />
                             </>)
                         })

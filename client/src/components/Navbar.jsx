@@ -23,6 +23,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios'
 import NavbarFooter from './NavbarFooter'
 import { useUserStore } from '@/app/userStore'
+import { useLocationStore } from '@/app/locationStore'
 
 
 
@@ -61,7 +62,8 @@ const Navbar = () => {
 
     const logIn = useUserStore((state) => state.logIn);
     const userdetails = useUserStore((state) => state.user)
-
+    const setLocation = useLocationStore((state) => state.setLocation)
+   
 
 
     useEffect(() => {
@@ -120,15 +122,20 @@ const Navbar = () => {
                                 <Command>
                                     <CommandInput placeholder="Search location..." className="h-9" />
                                     <CommandList>
-                                        <CommandEmpty>No framework found.</CommandEmpty>
+                                        <CommandEmpty>No cities found</CommandEmpty>
                                         <CommandGroup>
                                             {indianCities.map((framework) => (
                                                 <CommandItem
                                                     key={framework.value}
                                                     value={framework.value}
                                                     onSelect={(currentValue) => {
-                                                        setValue(currentValue === value ? "" : currentValue)
-                                                        setOpen(false)
+                                                        const newValue = currentValue === value ? "" : currentValue;
+                                                        setValue(newValue);
+                                                        const selectedCity = indianCities.find(c => c.value === newValue)?.label || "";
+                                                        setLocation(selectedCity);
+
+
+                                                        setOpen(false);
                                                     }}
                                                 >
                                                     {framework.label}
@@ -152,7 +159,6 @@ const Navbar = () => {
                         isAuthenticated ? (
                             <>
                                 <Avatar>
-                                    {console.log(userdetails)}
                                     <AvatarImage src={userdetails?.profilePicture || "https://github.com/shadcn.png"} />
                                     <AvatarFallback>
                                         {userdetails?.name?.[0] ?? "U"}
