@@ -63,7 +63,7 @@ const Navbar = () => {
     const logIn = useUserStore((state) => state.logIn);
     const userdetails = useUserStore((state) => state.user)
     const setLocation = useLocationStore((state) => state.setLocation)
-   
+
 
 
     useEffect(() => {
@@ -164,9 +164,9 @@ const Navbar = () => {
                                         {userdetails?.name?.[0] ?? "U"}
                                     </AvatarFallback>
                                 </Avatar>
-                                <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                {/* <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
                                     Logout
-                                </Button>
+                                </Button> */}
                             </>
                         ) : (
                             <>

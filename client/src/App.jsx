@@ -10,6 +10,7 @@ import Dashboard from './pages/OrgPages/Dashboard'
 import EditEvent from './pages/OrgPages/EditEvent'
 import Movies from './pages/userPages/Movies'
 import Sports from './pages/userPages/Sports'
+import EventDetails from './pages/userPages/EventDetails'
 
 function App() {
 
@@ -30,6 +31,9 @@ function App() {
         {
           path: 'Sports',
           element: <Sports />
+        }, {
+          path: 'eventDetails/:eventId',
+          element: <EventDetails />
         },
         {
           path: '/Organizer',
@@ -54,7 +58,7 @@ function App() {
         {
           path: '/dashboard/editEvent/:eventId',
           element: <EditEvent />
-        }
+        },
       ]
     }
   ])

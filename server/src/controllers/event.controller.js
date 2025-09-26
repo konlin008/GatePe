@@ -29,3 +29,25 @@ export const getEventsByCatagories = async (req, res) => {
     });
   }
 };
+export const getEventDetails = async (req, res) => {
+  try {
+    const eventId = req.params;
+    if (!eventId)
+      return res.status(400).json({
+        success: false,
+        message: "Event Id Needed",
+      });
+    const eventDetails = await Event.findById(eventId);
+    if (!eventDetails)
+      return res.status(404).json({
+        success: false,
+        message: "No Event Details Found",
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};

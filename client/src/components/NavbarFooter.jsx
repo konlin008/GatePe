@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { useLocationStore } from "@/app/locationStore";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { Terminal } from "lucide-react";
+
 
 const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
     const navigate = useNavigate()
-    const location = useLocationStore((state) => state.location)
+    const { location } = useLocationStore();
     const onClickHandler = (tabName) => {
         if (!location) {
             alert("Select Location")
@@ -18,14 +16,22 @@ const NavbarFooter = () => {
         }
 
     };
+    const onClickForYou = () => {
+        if (!location) {
+            alert("Select Location")
+        } else {
+            setActive('For You');
+            navigate(`/`)
+        }
+    }
 
     return (
         <div className="h-11 w-full px-60 flex items-center justify-between bg-gray-100">
             <div className="flex space-x-4">
                 <h2
-                    onClick={() => onClickHandler("For You")}
+                    onClick={onClickForYou}
                     className={
-                        active === "For You"
+                        active === "For You"    
                             ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
                             : "text-gray-500 hover:text-gray-900 cursor-pointer"
                     }
@@ -85,7 +91,7 @@ const NavbarFooter = () => {
                     GateMate
                 </h2>
             </div>
-        </div>
+        </div >
     );
 };
 

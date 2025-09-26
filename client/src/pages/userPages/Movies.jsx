@@ -1,15 +1,20 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import EventCard from '@/components/EventCard'
 import axios from 'axios'
 import { useLocationStore } from '@/app/locationStore'
 
 const Movies = () => {
-    const location = useLocationStore((state) => state.location)
+    const { location } = useLocationStore();
+    const [events, setEvents] = useState([])
     useEffect(() => {
         try {
             const fetchEvents = async () => {
                 const res = await axios.get(`${import.meta.env.VITE_EVENT_API}getEventsByCatgory?category=movie&location=${location}`)
-                console.log(res.data);
+                if (res?.data.events) {
+                    setEvents(res.data.events)
+                    console.log(res.data.events);
+                }
+
             }
             fetchEvents()
         } catch (error) {
@@ -19,46 +24,10 @@ const Movies = () => {
     return (
         <div className="min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100">
             <div >
-                <h1 className='text-2xl font-semibold mb-10'>Hits from previous weeks</h1>
+                <h1 className='text-2xl font-semibold mb-10'>Movies</h1>
                 <div className='flex space-x-10'>
                     {
-                        [1, 2, 3, 4].map(() => {
-                            return (<>  
-                                <EventCard />
-                            </>)
-                        })
-                    }
-                </div>
-            </div>
-            <div>
-                <h1 className='text-2xl font-semibold mb-10'>Happening this week</h1>
-                <div className='flex space-x-10'>
-                    {
-                        [1, 2, 3, 4].map(() => {
-                            return (<>
-                                <EventCard />
-                            </>)
-                        })
-                    }
-                </div>
-            </div>
-            <div>
-                <h1 className='text-2xl font-semibold mb-10'>Sports</h1>
-                <div className='flex space-x-10'>
-                    {
-                        [1, 2, 3, 4].map(() => {
-                            return (<>
-                                <EventCard />
-                            </>)
-                        })
-                    }
-                </div>
-            </div>
-            <div>
-                <h1 className='text-2xl font-semibold mb-10'>plays</h1>
-                <div className='flex space-x-10'>
-                    {
-                        [1, 2, 3, 4].map(() => {
+                        events?.map(() => {
                             return (<>
                                 <EventCard />
                             </>)
