@@ -22,8 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios'
 import NavbarFooter from './NavbarFooter'
-import { useUserStore } from '@/app/userStore'
-import { useLocationStore } from '@/app/locationStore'
+import { useAppStore } from '@/app/appStore'
 
 
 
@@ -60,9 +59,7 @@ const Navbar = () => {
     const { user, isAuthenticated, isLoading } = useAuth0();
 
 
-    const logIn = useUserStore((state) => state.logIn);
-    const userdetails = useUserStore((state) => state.user)
-    const setLocation = useLocationStore((state) => state.setLocation)
+    const { userData, login, setLocation, } = useAppStore();
 
 
 
@@ -81,19 +78,19 @@ const Navbar = () => {
                     picture: user.picture
                 })
                 const userInfo = res?.data.userData
-                logIn(userInfo)
+                login(userInfo)
             }
             else {
                 const userInfo = result?.data.userData
-                logIn(userInfo)
+                login(userInfo)
             }
         } catch (error) {
             alert(error)
         }
     }
-    if (isLoading) {
-        return <div>Loading ...</div>;
-    }
+    // if (isLoading) {
+    //     return <div>Loading ...</div>;
+    // }
 
     return (
         <nav className='sticky top-0 z-50 bg-white shadow-md'>
@@ -159,14 +156,14 @@ const Navbar = () => {
                         isAuthenticated ? (
                             <>
                                 <Avatar>
-                                    <AvatarImage src={userdetails?.profilePicture || "https://github.com/shadcn.png"} />
+                                    <AvatarImage src={userData?.profilePicture || "https://github.com/shadcn.png"} />
                                     <AvatarFallback>
-                                        {userdetails?.name?.[0] ?? "U"}
+                                        {userData?.name?.[0] ?? "U"}
                                     </AvatarFallback>
                                 </Avatar>
-                                {/* <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
                                     Logout
-                                </Button> */}
+                                </Button>
                             </>
                         ) : (
                             <>

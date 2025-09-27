@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocationStore } from "@/app/locationStore";
+import { useAppStore } from "@/app/appStore";
 
 
 const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
     const navigate = useNavigate()
-    const { location } = useLocationStore();
+    const { location } = useAppStore();
     const onClickHandler = (tabName) => {
         if (!location) {
             alert("Select Location")
@@ -31,7 +31,7 @@ const NavbarFooter = () => {
                 <h2
                     onClick={onClickForYou}
                     className={
-                        active === "For You"    
+                        active === "For You"
                             ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
                             : "text-gray-500 hover:text-gray-900 cursor-pointer"
                     }
