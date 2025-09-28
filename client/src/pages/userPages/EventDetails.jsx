@@ -28,10 +28,6 @@ const EventDetails = () => {
                 }
             }
             fetchEventDetails()
-            if (eventDetails) {
-                const date = new Date(eventDetails.date).toDateString()
-                console.log(date);
-            }
         } catch (error) {
             console.error(error);
         }
