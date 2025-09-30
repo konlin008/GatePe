@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { Check, ChevronDown, Import } from "lucide-react"
@@ -23,6 +23,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios'
 import NavbarFooter from './NavbarFooter'
 import { useAppStore } from '@/app/appStore'
+import LoadingSpinner from './LoadingSpinner'
 
 
 
@@ -56,7 +57,8 @@ const Navbar = () => {
     const [value, setValue] = React.useState("")
     const { loginWithRedirect } = useAuth0();
     const { logout } = useAuth0();
-    const { user, isAuthenticated, isLoading } = useAuth0();
+    const { user, isAuthenticated, } = useAuth0();
+    const [isloading, setIsLoading] = useState(null)
 
 
     const { userData, login, setLocation, } = useAppStore();
@@ -69,6 +71,7 @@ const Navbar = () => {
         }
     }, [user, isAuthenticated])
     const registerUser = async () => {
+        setIsLoading(true)
         try {
             const result = await axios.post(`${import.meta.env.VITE_USER_API}check `, { email: user.email })
             if (!result?.data.exists) {
@@ -87,10 +90,13 @@ const Navbar = () => {
         } catch (error) {
             alert(error)
         }
+        finally {
+            setIsLoading(false)
+        }
     }
-    // if (isLoading) {
-    //     return <div>Loading ...</div>;
-    // }
+    if (isloading) {
+        return <LoadingSpinner     />;
+    }
 
     return (
         <nav className='sticky top-0 z-50 bg-white shadow-md'>

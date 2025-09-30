@@ -5,8 +5,18 @@ import { Label } from '@/components/ui/label'
 import axios from 'axios'
 import { Loader2 } from 'lucide-react'
 import React, { useState } from 'react'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { toast } from 'sonner'
+import { useNavigate } from 'react-router-dom'
 
 const OrganizeEvents = () => {
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         title: '',
         catagory: '',
@@ -16,6 +26,7 @@ const OrganizeEvents = () => {
         duration: '',
         venue: '',
         adress: '',
+        city: '',
         deadline: '',
         ticketPrice: '',
         ticketQuantity: null,
@@ -76,6 +87,7 @@ const OrganizeEvents = () => {
 
     const handelSubmit = async (e) => {
         e.preventDefault()
+        console.log(formData);
         setLoading(true)
         try {
             const data = new FormData();
@@ -87,11 +99,12 @@ const OrganizeEvents = () => {
             })
 
             const res = await axios.post(`${import.meta.env.VITE_ORG_API}create_new_event`, data, { withCredentials: true })
-            if (res?.data) {
-                console.log(res.data);
+            if (res?.data.success) {
+                toast(`${res?.data.message}` || 'Event Created successfully')
+                navigate('/dashboard')
             }
         } catch (error) {
-            console.log(error);
+            toast(`${error?.message}` || 'Somthing Went wrong')
         }
         setLoading(false)
     }
@@ -223,6 +236,26 @@ const OrganizeEvents = () => {
                                 placeholder={'Gostho Paul Sarani, Maidan, B. B. D. Bagh Kolkata, West Bengal India'}
                                 onChange={handelOnChange}
                             />
+                        </div>
+                        <div className='border-gray-400 border-1 rounded-md mt-5'>
+                            <Select value={formData.city}
+                                onValueChange={(value) => setFormData({ ...formData, city: value })}>
+                                <SelectTrigger className="w-full border-gray-300 ">
+                                    <SelectValue placeholder="Select City" />
+                                </SelectTrigger>
+                                <SelectContent >
+                                    <SelectItem value="light">city</SelectItem>
+                                    <SelectItem value="delhi">Delhi</SelectItem>
+                                    <SelectItem value="mumbai">Mumbai</SelectItem>
+                                    <SelectItem value="bangalore">Bangalore</SelectItem>
+                                    <SelectItem value="hyderabad">Hyderabad</SelectItem>
+                                    <SelectItem value="chennai">Chennai</SelectItem>
+                                    <SelectItem value="kolkata">Kolkata</SelectItem>
+                                    <SelectItem value="ahmedabad">Ahmedabad</SelectItem>
+                                    <SelectItem value="pune">Pune</SelectItem>
+                                    <SelectItem value="jaipur">Jaipur</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-6 my-10 pt-10 border-t-2">

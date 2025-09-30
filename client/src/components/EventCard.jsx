@@ -1,16 +1,28 @@
 import React from 'react'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card'
+import { Card, CardContent, CardFooter, } from './ui/card'
+import { useNavigate } from 'react-router-dom'
 
-const EventCard = () => {
+const EventCard = ({ event }) => {
+    const navigate = useNavigate()
     return (
-        <Card className={'shadow-lg hover:shadow-2xl transform hover:sc-105 transition-all duration-300 pt-0 overflow-hidden w-60'}>
-            <div>
-                <img src="https://assets-in.bmscdn.com/iedb/movies/images/mobile/thumbnail/xlarge/tanvi-the-great-et00440977-1752906555.jpg" alt=""
-                    className='w-full h-70' />
-            </div>
-            <CardFooter className={'flex flex-col items-start space-y-2'}>
-                <h2 className='font-bold text-md'>Tanvi</h2>
-                <p>UA16+ | <span>Hindi</span></p>
+        <Card
+            onClick={() => navigate(`/eventDetails/${event._id}`)}
+            className='shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden w-60 h-100 cursor-pointer pt-0'
+        >
+            <CardContent className='h-64 p-0'>
+                <img
+                    src={event?.imageUrlPortrait}
+                    alt={event?.title}
+                    className='w-full h-full object-cover'
+                />
+            </CardContent>
+            <CardFooter className='flex flex-col items-start space-y-2 p-4 h-32'>
+                <h2 className='font-bold text-md line-clamp-2 w-full'>
+                    {event?.title}
+                </h2>
+                <p className='text-sm text-gray-600'>
+                    {event.city} | <span>₹{event.ticketPrice}</span>
+                </p>
             </CardFooter>
         </Card>
     )

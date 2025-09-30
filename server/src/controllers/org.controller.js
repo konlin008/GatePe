@@ -90,6 +90,7 @@ export const listNewEvent = async (req, res) => {
       time,
       duration,
       venue,
+      city,
       adress,
       deadline,
       ticketPrice,
@@ -108,6 +109,7 @@ export const listNewEvent = async (req, res) => {
       !time ||
       !duration ||
       !venue ||
+      !city ||
       !adress ||
       !deadline ||
       !image1 ||
@@ -134,6 +136,7 @@ export const listNewEvent = async (req, res) => {
       duration,
       deadline,
       venue,
+      city,
       adress,
       ticketPrice,
       ticketQuantity,
@@ -141,7 +144,6 @@ export const listNewEvent = async (req, res) => {
       imageUrlPortrait: image2Url,
       organizer: orgId,
     });
-    console.log("Successfully created event.");
     if (newEvent)
       return res.status(200).json({
         success: true,
@@ -160,7 +162,7 @@ export const getEventsByOrgId = async (req, res) => {
     const orgId = req.id;
     const events = await Event.find({ organizer: orgId });
     if (events?.length === 0)
-      return res.status(202).json({
+      return res.status(202).json({ 
         message: "No Event Listed",
         success: true,
       });
