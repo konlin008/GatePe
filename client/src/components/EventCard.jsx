@@ -16,7 +16,7 @@ const EventCard = ({ event }) => {
                     className='w-full h-full object-cover'
                 />
             </CardContent>
-            <CardFooter className='flex flex-col items-start space-y-2 p-4 h-32'>
+            <CardFooter className='flex flex-col items-start space-y-5 pl-2 pt-0 h-32  '>
                 <h2 className='font-bold text-md line-clamp-2 w-full'>
                     {event?.title}
                 </h2>
