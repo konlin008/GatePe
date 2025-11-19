@@ -4,6 +4,9 @@ import Event from "../../db/event.schema.js";
 export const getEventsByCatagories = async (req, res) => {
   try {
     const { category, location } = req.query;
+    const tomorrow = new Date();
+    tomorrow.setHours(0, 0, 0, 0);
+    tomorrow.setDate(tomorrow.getDate() + 1);
     if (!location) {
       return res.status(400).json({
         message: "Bad Request",
@@ -11,7 +14,10 @@ export const getEventsByCatagories = async (req, res) => {
       });
     }
     if (!category) {
-      const events = await Event.find({ city: location });
+      const events = await Event.find({
+        city: location,
+        date: { $gte: tomorrow },
+      });
       if (!events || events.length === 0) {
         return res.status(202).json({
           message: `No Events Found in ${location}`,
@@ -23,7 +29,11 @@ export const getEventsByCatagories = async (req, res) => {
         success: true,
       });
     } else {
-      const events = await Event.find({ category, city: location });
+      const events = await Event.find({
+        category,
+        city: location,
+        date: { $gte: tomorrow },
+      });
       if (!events || events.length === 0) {
         return res.status(202).json({
           message: `No ${category} Events Found in ${location}`,
