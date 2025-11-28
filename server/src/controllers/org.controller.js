@@ -140,6 +140,7 @@ export const listNewEvent = async (req, res) => {
       adress,
       ticketPrice,
       ticketQuantity,
+      availableTickets: ticketQuantity,
       imageUrlLandscape: image1Url,
       imageUrlPortrait: image2Url,
       organizer: orgId,

@@ -6,6 +6,7 @@ import eventRouter from "./src/routes/event.routes.js";
 import "dotenv/config";
 import connectDb from "./db/db.js";
 import cookieParser from "cookie-parser";
+import { stripeWebhook } from "./src/controllers/event.controller.js";
 
 const app = express();
 
@@ -16,6 +17,11 @@ app.use(
   })
 );
 app.use(cookieParser());
+app.post(
+  "/api/v1/event/stripe-webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook
+);
 app.use(express.json());
 
 connectDb();

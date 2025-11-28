@@ -95,7 +95,7 @@ const Navbar = () => {
         }
     }
     if (isloading) {
-        return <LoadingSpinner     />;
+        return <LoadingSpinner />;
     }
 
     return (
@@ -168,8 +168,8 @@ const Navbar = () => {
                                     </AvatarFallback>
                                 </Avatar>
                                 {/* <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
-                                    Logout
-                                </Button> */}
+                                        Logout
+                                    </Button> */}
                             </>
                         ) : (
                             <>

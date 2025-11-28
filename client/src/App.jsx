@@ -11,6 +11,8 @@ import EditEvent from './pages/OrgPages/EditEvent'
 import Movies from './pages/userPages/Movies'
 import Sports from './pages/userPages/Sports'
 import EventDetails from './pages/userPages/EventDetails'
+import SuccessPage from './pages/paymentPages/SuccessPage'
+import CancelPage from './pages/paymentPages/CancelPage'
 
 function App() {
 
@@ -59,6 +61,14 @@ function App() {
           path: '/dashboard/editEvent/:eventId',
           element: <EditEvent />
         },
+        {
+          path: '/payment-success',
+          element: <SuccessPage />
+        },
+        {
+          path: '/payment-cancel',
+          element: <CancelPage />
+        }
       ]
     }
   ])
