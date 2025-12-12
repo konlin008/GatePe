@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ticketSchema = new mongoose.Schema({
   eventId: {
@@ -27,6 +27,12 @@ const ticketSchema = new mongoose.Schema({
   },
   validTill: {
     type: Date,
+    required: false,
+  },
+  quantity: {
+    type: Number,
+    default: 1,
+    min: 1,
     required: true,
   },
   createdAt: {

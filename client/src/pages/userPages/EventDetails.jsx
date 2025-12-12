@@ -50,12 +50,12 @@ const EventDetails = () => {
                     amount: eventDetails.ticketPrice,
                     quantity: ticketQuantity,
                 }
-            },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
+            }, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",
                 }
+            }
             );
             window.location.href = res.data.url;
         } catch (error) {

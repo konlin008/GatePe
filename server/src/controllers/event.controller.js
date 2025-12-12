@@ -1,6 +1,6 @@
-import { json } from "express";
 import Event from "../../db/event.schema.js";
 import Stripe from "stripe";
+import Ticket from "../../db/ticket.schema.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const getEventsByCatagories = async (req, res) => {
@@ -101,6 +101,7 @@ export const getThisWeekEvent = async (req, res) => {
 export const checkoutSessions = async (req, res) => {
   try {
     const { eventDetails } = req.body;
+    const userId = req.id;
     const event = await Event.findById(eventDetails.eventId);
     if (event.availableTickets < eventDetails.quantity) {
       return res.status(400).json({
@@ -111,6 +112,7 @@ export const checkoutSessions = async (req, res) => {
     const sessions = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
+      client_reference_id: userId,
       line_items: [
         {
           price_data: {
@@ -128,7 +130,8 @@ export const checkoutSessions = async (req, res) => {
         eventName: eventDetails.eventName,
         quantity: eventDetails.quantity,
       },
-      success_url: "http://localhost:5173/payment-success",
+      success_url:
+        "http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "http://localhost:5173/payment-cancel",
     });
     res.json({ url: sessions.url });
@@ -157,6 +160,7 @@ export const stripeWebhook = async (req, res) => {
     const session = event.data.object;
     const eventId = session.metadata.eventId;
     const quantity = parseInt(session.metadata.quantity);
+    const userId = session.client_reference_id;
 
     try {
       const updatedEvent = await Event.findOneAndUpdate(
@@ -180,6 +184,13 @@ export const stripeWebhook = async (req, res) => {
           `Tickets reduced successfully: ${quantity} for event ${eventId}`
         );
       }
+      const ticket = await Ticket.create({
+        eventId,
+        userId,
+        quantity,
+        status: "BOOKED",
+        paymentId: session.payment_intent,
+      });
     } catch (error) {
       console.log("Error reducing tickets:", error);
     }

@@ -73,7 +73,7 @@ const Navbar = () => {
     const registerUser = async () => {
         setIsLoading(true)
         try {
-            const result = await axios.post(`${import.meta.env.VITE_USER_API}check `, { email: user.email })
+            const result = await axios.post(`${import.meta.env.VITE_USER_API}check `, { email: user.email }, { withCredentials: true })
             if (!result?.data.exists) {
                 const res = await axios.post(`${import.meta.env.VITE_USER_API}register`, {
                     email: user.email,
@@ -167,9 +167,9 @@ const Navbar = () => {
                                         {userData?.name?.[0] ?? "U"}
                                     </AvatarFallback>
                                 </Avatar>
-                                {/* <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
-                                        Logout
-                                    </Button> */}
+                                <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                    Logout
+                                </Button>
                             </>
                         ) : (
                             <>

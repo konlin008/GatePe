@@ -1,4 +1,5 @@
 import User from "../../db/user.schema.js";
+import generateToken from "../../utils/generateToken.js";
 export const register = async (req, res) => {
   try {
     const { email, name, picture } = req.body;
@@ -35,10 +36,19 @@ export const check = async (req, res) => {
         exists: false,
       });
     } else {
-      return res.json({
-        exists: true,
-        userData: existingUser,
-      });
+      const token = generateToken(existingUser);
+      return res
+        .status(200)
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+          maxAge: 24 * 60 * 60 * 1000,
+        })
+        .json({
+          exists: true,
+          userData: existingUser,
+        });
     }
   } catch (error) {
     console.log(error);

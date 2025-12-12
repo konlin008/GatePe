@@ -10,3 +10,4 @@ const generateToken = (userData) => {
 };
 
 export default generateToken;
+  

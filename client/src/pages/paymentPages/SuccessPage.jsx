@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import React from 'react'
 import { FaCheckCircle } from "react-icons/fa";
 const SuccessPage = () => {
+    const sessionId = new URLSearchParams(window.location.search).get("session_id")
+    console.log(sessionId);
     return (
         <div className=' px-60 py-20 min-h-screen bg-gradient-to-b from-blue-100 via-white to-blue-100'>
             <div className=' flex flex-col justify-center items-center pt-20'>

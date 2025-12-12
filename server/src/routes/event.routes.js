@@ -3,13 +3,13 @@ import {
   checkoutSessions,
   getEventsByCatagories,
   getThisWeekEvent,
-  stripeWebhook,
 } from "../controllers/event.controller.js";
+import isAuthenticated from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
 router.get("/getEventsByCatgory", getEventsByCatagories);
 router.get("/getEventThisWeek", getThisWeekEvent);
-router.post("/create-checkout-session", checkoutSessions);
+router.post("/create-checkout-session", isAuthenticated, checkoutSessions);
 
 export default router;
