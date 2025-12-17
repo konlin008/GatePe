@@ -2,6 +2,7 @@ import Event from "../../db/event.schema.js";
 import Stripe from "stripe";
 import Ticket from "../../db/ticket.schema.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import QRCode from "qrcode";
 
 export const getEventsByCatagories = async (req, res) => {
   try {
@@ -191,6 +192,10 @@ export const stripeWebhook = async (req, res) => {
         status: "BOOKED",
         paymentId: session.payment_intent,
       });
+      const qrData = ticket._id.toString();
+      const qrCode = await QRCode.toDataURL(qrData);
+      ticket.qrCode = qrCode;
+      await ticket.save();
     } catch (error) {
       console.log("Error reducing tickets:", error);
     }

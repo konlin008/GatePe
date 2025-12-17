@@ -8,7 +8,9 @@ export const ticketDetails = async (req, res) => {
     const sessionId = req.params.sessionId;
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     const paymentId = session.payment_intent;
-    const ticketDetails = await Ticket.findOne({ paymentId });
+    const ticketDetails = await Ticket.findOne({ paymentId })
+      .select("-userId -__v")
+      .populate("eventId", "title location startTime endTime");
     if (!ticketDetails)
       return res.status(404).json({
         message: "No Ticket Found",
