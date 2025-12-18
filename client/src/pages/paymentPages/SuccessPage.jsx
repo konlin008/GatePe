@@ -38,16 +38,16 @@ const SuccessPage = () => {
                     <p><span className='font-semibold'>STATUS:</span>{ticketDetails?.status}</p>
                     <p><span className='font-semibold'>PAYMENT ID</span>: {ticketDetails?.paymentId}</p>
                 </div>
-                <div className='flex gap-7 mt-5'>
+                <div className='flex gap-7 mt-5 '>
                     <Dialog className={'bg-transparent'}>
-                        <DialogTrigger>
-                            <Button>View Ticket</Button>
+                        <DialogTrigger className={'bg-black text-white px-5 py-2 rounded-lg'}>
+                            View Ticket
                         </DialogTrigger>
                         <DialogContent>
-                            <TicketComponent />
+                            <TicketComponent ticketDetails={ticketDetails} />
                         </DialogContent>
                     </Dialog>
-                    <Button>Home</Button>
+                    <Button className={'bg-black text-white px-5 py-5 rounded-lg'}>Home</Button>
                 </div>
             </div>
         </div>

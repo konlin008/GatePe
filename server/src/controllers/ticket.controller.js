@@ -10,7 +10,7 @@ export const ticketDetails = async (req, res) => {
     const paymentId = session.payment_intent;
     const ticketDetails = await Ticket.findOne({ paymentId })
       .select("-userId -__v")
-      .populate("eventId", "title location startTime endTime");
+      .populate("eventId", "title location startTime endTime imageUrlPortrait");
     if (!ticketDetails)
       return res.status(404).json({
         message: "No Ticket Found",
