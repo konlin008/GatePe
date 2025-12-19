@@ -1,24 +1,32 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import "./App.css";
 import MainLayOut from "./layout/MainLayOut";
-import ForYou from "./pages/userPages/ForYou";
-import Org from "./pages/OrgPages/Org";
-import OrgRegistration from "./pages/OrgPages/OrgRegistration";
-import OrganizeEvents from "./pages/OrgPages/organizeEvents";
-import OrgLogin from "./pages/OrgPages/OrgLogin";
-import Dashboard from "./pages/OrgPages/Dashboard";
-import EditEvent from "./pages/OrgPages/EditEvent";
-import Movies from "./pages/userPages/Movies";
-import Sports from "./pages/userPages/Sports";
-import EventDetails from "./pages/userPages/EventDetails";
-import SuccessPage from "./pages/paymentPages/SuccessPage";
-import CancelPage from "./pages/paymentPages/CancelPage";
+
+
+const ForYou = lazy(() => import("./pages/userPages/ForYou"));
+const Movies = lazy(() => import("./pages/userPages/Movies"));
+const Sports = lazy(() => import("./pages/userPages/Sports"));
+const EventDetails = lazy(() => import("./pages/userPages/EventDetails"));
+
+const Org = lazy(() => import("./pages/OrgPages/Org"));
+const OrgRegistration = lazy(() => import("./pages/OrgPages/OrgRegistration"));
+const OrgLogin = lazy(() => import("./pages/OrgPages/OrgLogin"));
+const Dashboard = lazy(() => import("./pages/OrgPages/Dashboard"));
+const OrganizeEvents = lazy(() => import("./pages/OrgPages/organizeEvents"));
+const EditEvent = lazy(() => import("./pages/OrgPages/EditEvent"));
+
+const SuccessPage = lazy(() => import("./pages/paymentPages/SuccessPage"));
+const CancelPage = lazy(() => import("./pages/paymentPages/CancelPage"));
+
 
 function App() {
   const appRouter = createBrowserRouter([
     {
       path: "/",
-      element: <MainLayOut />,
+      element: <Suspense fallback={<h2>Loading page...</h2>}>
+        <MainLayOut />
+      </Suspense>,
       children: [
         { path: "", element: <ForYou /> },
         { path: "Movies", element: <Movies /> },
