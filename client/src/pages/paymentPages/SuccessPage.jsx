@@ -5,7 +5,9 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { FaCheckCircle } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 const SuccessPage = () => {
+    const nav = useNavigate()
     const sessionId = new URLSearchParams(window.location.search).get("session_id")
     const [ticketDetails, setTicketDetails] = useState({})
     useEffect(() => {
@@ -14,9 +16,8 @@ const SuccessPage = () => {
                 try {
                     let res = await axios.get(`${import.meta.env.VITE_TICKET_API}ticketdetails/${sessionId}`)
                     if (res) {
-                        console.log(res.data.ticketDetails);
-                        setTicketDetails(res.data.ticketDetails
-                        )
+                        setTicketDetails(res.data.ticketDetails)
+
                     }
                 } catch (error) {
                     console.log(error);
@@ -43,11 +44,11 @@ const SuccessPage = () => {
                         <DialogTrigger className={'bg-black text-white px-5 py-2 rounded-lg'}>
                             View Ticket
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className={'w-[20vw]'}>
                             <TicketComponent ticketDetails={ticketDetails} />
                         </DialogContent>
                     </Dialog>
-                    <Button className={'bg-black text-white px-5 py-5 rounded-lg'}>Home</Button>
+                    <Button onClick={() => nav('/')} className={'bg-black text-white px-5 py-5 rounded-lg'}>Home</Button>
                 </div>
             </div>
         </div>
