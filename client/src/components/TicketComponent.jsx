@@ -34,7 +34,7 @@ const TicketComponent = ({ ticketDetails }) => {
                     </DialogDescription>
                     <DialogDescription className='flex justify-start text-start gap-2'>
                         <GoPerson size={20} />
-                        {ticketDetails.quantity} Person Can Enter
+                        {ticketDetails.quantity} Person Allowed 
                     </DialogDescription>
                 </div>
             </div>

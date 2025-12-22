@@ -133,7 +133,8 @@ export const checkoutSessions = async (req, res) => {
       },
       success_url:
         "http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:5173/payment-cancel",
+      cancel_url:
+        "http://localhost:5173/payment-cancel?session_id={CHECKOUT_SESSION_ID}",
     });
     res.json({ url: sessions.url });
   } catch (error) {

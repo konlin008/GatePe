@@ -7,7 +7,7 @@ const EventCard = ({ event }) => {
     return (
         <Card
             onClick={() => navigate(`/eventDetails/${event._id}`)}
-            className='shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden w-60 h-100 cursor-pointer pt-0'
+            className='shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden w-50 h-80 cursor-pointer pt-0'
         >
             <CardContent className='h-64 p-0'>
                 <img

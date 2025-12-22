@@ -5,10 +5,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const ticketDetails = async (req, res) => {
   try {
+    const userId = req.id;
+    console.log(userId);
     const sessionId = req.params.sessionId;
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     const paymentId = session.payment_intent;
-    const ticketDetails = await Ticket.findOne({ paymentId })
+    const ticketDetails = await Ticket.findOne({ paymentId, userId })
       .select("-userId -__v")
       .populate(
         "eventId",
@@ -28,5 +30,22 @@ export const ticketDetails = async (req, res) => {
       message: "Internal Server Error",
       success: false,
     });
+  }
+};
+export const getCheckoutSession = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["payment_intent"],
+    });
+
+    res.json({
+      success: true,
+      status: session.payment_status,
+      paymentIntentId: session.payment_intent?.id || null,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false });
   }
 };

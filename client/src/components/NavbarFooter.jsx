@@ -7,6 +7,7 @@ const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
     const navigate = useNavigate()
     const { location } = useAppStore();
+    const user = useAppStore((state) => state.user);
     const onClickHandler = (tabName) => {
         if (!location) {
             alert("Select Location")
@@ -69,28 +70,30 @@ const NavbarFooter = () => {
                     Sports
                 </h2>
             </div>
-            <div className="flex space-x-4 items-center justify-between">
-                <h2
-                    onClick={() => onClickHandler("Organizer")}
-                    className={
-                        active === "Organizer"
-                            ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
-                            : "text-gray-500 hover:text-gray-900 cursor-pointer"
-                    }
-                >
-                    Organizer
-                </h2>
-                <h2
-                    onClick={() => onClickHandler("GateMate")}
-                    className={
-                        active === "GateMate"
-                            ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
-                            : "text-gray-500 hover:text-gray-900 cursor-pointer"
-                    }
-                >
-                    GateMate
-                </h2>
-            </div>
+            {
+                !user ? (<div className="flex space-x-4 items-center justify-between">
+                    <h2
+                        onClick={() => onClickHandler("Organizer")}
+                        className={
+                            active === "Organizer"
+                                ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
+                                : "text-gray-500 hover:text-gray-900 cursor-pointer"
+                        }
+                    >
+                        Organizer
+                    </h2>
+                    <h2
+                        onClick={() => onClickHandler("GateMate")}
+                        className={
+                            active === "GateMate"
+                                ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
+                                : "text-gray-500 hover:text-gray-900 cursor-pointer"
+                        }
+                    >
+                        GateMate
+                    </h2>
+                </div>) : null
+            }
         </div >
     );
 };

@@ -14,7 +14,7 @@ const SuccessPage = () => {
         if (sessionId) {
             const fetchTicketdetails = async () => {
                 try {
-                    let res = await axios.get(`${import.meta.env.VITE_TICKET_API}ticketdetails/${sessionId}`)
+                    let res = await axios.get(`${import.meta.env.VITE_TICKET_API}ticketdetails/${sessionId}`, { withCredentials: true })
                     if (res) {
                         setTicketDetails(res.data.ticketDetails)
 
