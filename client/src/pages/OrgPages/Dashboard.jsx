@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import axios from 'axios'
@@ -44,6 +45,8 @@ const Dashboard = () => {
                             <TableHead>Status</TableHead>
                             <TableHead>Revenue</TableHead>
                             <TableHead>Edit</TableHead>
+                            <TableHead>Action</TableHead>
+
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -56,6 +59,7 @@ const Dashboard = () => {
                                         <TableCell>{getEventSatus(event)}</TableCell>
                                         <TableCell>Rs. 0</TableCell>
                                         <TableCell onClick={() => navigate(`/dashboard/editEvent/${event?._id}`)} ><SquarePen size={20} /></TableCell>
+                                        <TableCell>   <Badge className={'cursor-pointer bg-blue-500'} onClick={() => navigate(`assign-gateMate/${event?._id}`)}>Assign GateMate</Badge> </TableCell>
                                     </TableRow>
                                 )
                             })

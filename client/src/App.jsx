@@ -15,6 +15,7 @@ const OrganizeEvents = lazy(() => import("./pages/OrgPages/organizeEvents"));
 const EditEvent = lazy(() => import("./pages/OrgPages/EditEvent"));
 const SuccessPage = lazy(() => import("./pages/paymentPages/SuccessPage"));
 const CancelPage = lazy(() => import("./pages/paymentPages/CancelPage"));
+const AssignGateMate = lazy(() => import("./pages/OrgPages/AssignGateMate"))
 
 
 function App() {
@@ -32,7 +33,8 @@ function App() {
         { path: "Organizer", element: <Org /> },
         { path: "org-registration", element: <OrgRegistration /> },
         { path: "org-login", element: <OrgLogin /> },
-        { path: "dashboard", element: <Dashboard /> },
+        { path: "dashboard", element: <Dashboard />, },
+        { path: "dashboard/assign-gateMate/:eventId", element: <AssignGateMate /> },
         { path: "new-event", element: <OrganizeEvents /> },
         { path: "dashboard/editEvent/:eventId", element: <EditEvent /> },
         { path: "payment-success", element: <SuccessPage /> },

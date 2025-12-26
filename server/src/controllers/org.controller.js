@@ -3,6 +3,8 @@ import Org from "../../db/org.schema.js";
 import generateToken from "../../utils/generateToken.js";
 import { deleteMedia, uploadMedia } from "../../utils/cloudinary.js";
 import Event from "../../db/event.schema.js";
+import { hashPassword } from "../../utils/password.js";
+import GateMate from "../../db/gateMate.schema.js";
 
 export const orgRegister = async (req, res) => {
   try {
@@ -249,6 +251,39 @@ export const updateEventDetails = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       msg: "Internal Server Error",
+    });
+  }
+};
+export const assignGateMate = async (req, res) => {
+  try {
+    const { email, password, eventId } = req.body;
+    if (!email || !password || !eventId)
+      return res.status(400).json({
+        message: "All Fields are Required",
+        success: false,
+      });
+    const existingUser = await GateMate.findOne({ email, eventId });
+    if (existingUser)
+      return res.status(400).json({
+        message: "GateMate already assigned to this event",
+        success: false,
+      });
+    const hashedPassword = await hashPassword(password);
+
+    const newMate = await GateMate.create({
+      email,
+      password: hashedPassword,
+      eventId,
+    });
+    if (newMate)
+      return res.status(202).json({
+        success: true,
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
     });
   }
 };

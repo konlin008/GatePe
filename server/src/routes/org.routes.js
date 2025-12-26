@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  assignGateMate,
   getEventDetails,
   getEventsByOrgId,
   listNewEvent,
@@ -33,4 +34,6 @@ router.put(
 );
 router.get("/get_all_events", isAuthenticated, getEventsByOrgId);
 router.get("/get-event-details/:id", getEventDetails);
+
+router.post("/assignGateMate", assignGateMate);
 export default router;
