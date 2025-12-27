@@ -65,13 +65,13 @@ const OrganizeEvents = () => {
                 const width = img.width;
                 const height = img.height;
 
-                if (name === 'image1') { // landscape
+                if (name === 'image1') {
                     if (width <= height) {
-                        warning = '⚠️ This should be a landscape image';
+                        warning = ' This should be a landscape image';
                     }
-                } else if (name === 'image2') { // portrait
+                } else if (name === 'image2') {
                     if (height <= width) {
-                        warning = '⚠️ This should be a portrait image';
+                        warning = ' This should be a portrait image';
                     }
                 }
 
@@ -113,7 +113,7 @@ const OrganizeEvents = () => {
             <Card className={'rounded-lg shadow-none border-none  bg-transparent'}>
                 <CardHeader>
                     <CardTitle className={'text-2xl'}>
-                        Set Up Your Event
+                        Set Up Your Event   
                     </CardTitle>
                     <CardDescription className={'text-md'}>
                         Provide essential details about your event to help attendees know what to expect.

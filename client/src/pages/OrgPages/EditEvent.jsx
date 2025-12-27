@@ -33,7 +33,7 @@ const EditEvent = () => {
     useEffect(() => {
         try {
             const fetchEvent = async () => {
-                const res = await axios.get(`${import.meta.env.VITE_ORG_API}get-event-details/${id}`)
+                const res = await axios.get(`${import.meta.env.VITE_ORG_API}get-event-details/${id}`, { withCredentials: true })
                 if (res?.data) {
                     const eventDetails = res.data.eventDetails
                     console.log(eventDetails);

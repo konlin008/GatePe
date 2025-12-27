@@ -1,11 +1,13 @@
 import express from "express";
 import {
   assignGateMate,
+  getAllGateMate,
   getEventDetails,
   getEventsByOrgId,
   listNewEvent,
   orgLogin,
   orgRegister,
+  removeGateMate,
   updateEventDetails,
 } from "../controllers/org.controller.js";
 import upload from "../../utils/multer.js";
@@ -15,13 +17,17 @@ const router = express.Router();
 
 router.post("/register", orgRegister);
 router.post("/login", orgLogin);
+router.get("/getAllGateMates/:eventId", getAllGateMate);
+router.delete("/removeGateMate/:gateMateId", removeGateMate);
+
+router.use(isAuthenticated);
 router.post(
   "/create_new_event",
   upload.fields([
     { name: "image1", maxCount: 1 },
     { name: "image2", maxCount: 1 },
   ]),
-  isAuthenticated,
+
   listNewEvent
 );
 router.put(
@@ -32,8 +38,7 @@ router.put(
   ]),
   updateEventDetails
 );
-router.get("/get_all_events", isAuthenticated, getEventsByOrgId);
+router.get("/get_all_events", getEventsByOrgId);
 router.get("/get-event-details/:id", getEventDetails);
-
 router.post("/assignGateMate", assignGateMate);
 export default router;

@@ -287,3 +287,41 @@ export const assignGateMate = async (req, res) => {
     });
   }
 };
+export const getAllGateMate = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    if (!eventId)
+      return res.status(400).json({ message: "Bad Request", success: false });
+    const gateMates = await GateMate.find({ eventId }).select("-password");
+    if (!gateMates) return res.status(202).json({});
+    return res.status(200).json({
+      gateMates,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+export const removeGateMate = async (req, res) => {
+  try {
+    const { gateMateId } = req.params;
+    if (!gateMateId)
+      return res.status(400).json({ message: "Bad Request", success: false });
+    const deletedMate = await GateMate.deleteOne({ _id: gateMateId });
+    if (deletedMate.deletedCount === 1)
+      return res.status(200).json({
+        message: "GateMate Removed Succesfully",
+        success: true,
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
