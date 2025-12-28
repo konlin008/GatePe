@@ -2,11 +2,12 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { IoMdAdd } from "react-icons/io";
+import { FaArrowLeft } from "react-icons/fa6";
 
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const AssignGateMate = () => {
     const [email, setEmail] = useState('')
@@ -14,6 +15,7 @@ const AssignGateMate = () => {
     const [loading, setLoading] = useState(false)
     const [gateMates, setGateMates] = useState([])
     const { eventId } = useParams()
+    const nav = useNavigate()
 
     const fetchGateMates = async () => {
         const res = await axios.get(`${import.meta.env.VITE_ORG_API}getAllGateMates/${eventId}`, { withCredentials: true })
@@ -50,8 +52,14 @@ const AssignGateMate = () => {
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100'>
             <div>
+                <div className='items-center mb-5'>
+                    <div className='border-black border-1 p-2 rounded-full w-fit mb-2 ' onClick={() => nav('/dashboard')} >
+                        <FaArrowLeft size={20} />
+                    </div>
+                    <h1 className='font-semibold text-xl border-b-2 border-gray-700 w-fit ml-2'>Assigned Entry Staff</h1>
+                </div>
                 <Table>
-                    <TableCaption>A list of your recent invoices.</TableCaption>
+                    <TableCaption>A list of GateMates for This Event .</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[200px]">No.</TableHead>
@@ -74,9 +82,9 @@ const AssignGateMate = () => {
                         )
                     })}
                 </Table>
-                <div className=' flex justify-end'>
+                <div className=' flex justify-end gap-5'>
                     <Dialog>
-                        <DialogTrigger className={'bg-blue-500 py-2 px-4 rounded-md text-white flex items-center gap-2'}><IoMdAdd size={20} /> GateMate</DialogTrigger>
+                        <DialogTrigger className={'bg-blue-500 py-2 px-4 rounded-md text-white flex items-center gap-2'}><IoMdAdd size={20} /> New GateMate </DialogTrigger>
                         <DialogContent className="flex flex-col justify-center mt-10">
 
                             <DialogHeader>
@@ -122,6 +130,19 @@ const AssignGateMate = () => {
                                     Assign GateMate
                                 </button>
                             </form>
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog>
+                        <DialogTrigger className={'bg-blue-500 py-2 px-4 rounded-md text-white flex items-center gap-2'}><IoMdAdd size={20} /> Existing GateMate</DialogTrigger>
+                        <DialogContent className="flex flex-col justify-center mt-10">
+                            <DialogHeader>
+                                <DialogTitle>
+                                    All GateMates
+                                </DialogTitle>
+                                <DialogDescription>
+                                    Manage and assign gateMates to events from here.
+                                </DialogDescription>
+                            </DialogHeader>
                         </DialogContent>
                     </Dialog>
                 </div>

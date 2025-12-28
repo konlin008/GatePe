@@ -1,12 +1,20 @@
 import mongoose, { model } from "mongoose";
 
 const gateMateSchema = new mongoose.Schema({
+  name: {
+    type: String,
+  },
   email: {
     type: String,
     required: true,
   },
   password: {
     type: String,
+    required: true,
+  },
+  organizerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Organizer",
     required: true,
   },
   eventId: {

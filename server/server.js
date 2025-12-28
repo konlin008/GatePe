@@ -16,7 +16,7 @@ app.use(
     origin: "http://localhost:5173",
     credentials: true,
   })
-);
+);  
 app.use(cookieParser());
 app.post(
   "/api/v1/event/stripe-webhook",

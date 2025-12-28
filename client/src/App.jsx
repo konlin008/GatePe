@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import "./App.css";
 import MainLayOut from "./layout/MainLayOut";
+import GateMateDashboard from "./pages/GateMatePages/GateMateDashboard";
 
 const ForYou = lazy(() => import("./pages/userPages/ForYou"));
 const Movies = lazy(() => import("./pages/userPages/Movies"));
@@ -39,6 +40,7 @@ function App() {
         { path: "dashboard/editEvent/:eventId", element: <EditEvent /> },
         { path: "payment-success", element: <SuccessPage /> },
         { path: "payment-cancel", element: <CancelPage /> },
+        { path: "/GateMate", element: <GateMateDashboard /> }
       ],
     },
   ]);
