@@ -24,7 +24,7 @@ const EventDetails = () => {
     useEffect(() => {
         try {
             const fetchEventDetails = async () => {
-                const res = await axios.get(`${import.meta.env.VITE_ORG_API}get-event-details/${id}`)
+                const res = await axios.get(`${import.meta.env.VITE_ORG_API}get-event-details/${id}`, { withCredentials: true })
                 console.log(res?.data);
                 if (res?.data.eventDetails) {
                     const ev = res.data.eventDetails;

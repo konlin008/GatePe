@@ -1,7 +1,9 @@
 import express from "express";
 import {
+  addExistingMateToEvent,
   assignGateMate,
-  getAllGateMate,
+  availableGateMate,
+  getAllAssignedGateMate,
   getEventDetails,
   getEventsByOrgId,
   listNewEvent,
@@ -17,8 +19,7 @@ const router = express.Router();
 
 router.post("/register", orgRegister);
 router.post("/login", orgLogin);
-router.get("/getAllGateMates/:eventId", getAllGateMate);
-router.delete("/removeGateMate/:gateMateId", removeGateMate);
+router.get("/getAllGateMates/:eventId", getAllAssignedGateMate);
 
 router.use(isAuthenticated);
 router.post(
@@ -41,4 +42,8 @@ router.put(
 router.get("/get_all_events", getEventsByOrgId);
 router.get("/get-event-details/:id", getEventDetails);
 router.post("/assignGateMate", assignGateMate);
+router.delete("/removeGateMate/:gateMateId", removeGateMate);
+router.get("/available-gateMate/:eventId", availableGateMate);
+router.put("/add-existing-mate-to-event", addExistingMateToEvent);
+
 export default router;

@@ -14,6 +14,7 @@ const AssignGateMate = () => {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [gateMates, setGateMates] = useState([])
+    const [availableMates, setAvailableMates] = useState([])
     const { eventId } = useParams()
     const nav = useNavigate()
 
@@ -42,12 +43,22 @@ const AssignGateMate = () => {
         setLoading(false)
     }
     const removeGateMate = async (gateMateId) => {
-        const res = await axios.delete(`${import.meta.env.VITE_ORG_API}removeGateMate/${gateMateId}`)
+        const res = await axios.delete(`${import.meta.env.VITE_ORG_API}removeGateMate/${gateMateId}`, { withCredentials: true })
         if (res?.data?.success) {
             toast.success(res?.data?.message || "GateMate Removed")
             fetchGateMates();
         }
 
+    }
+    const nonAssignedMates = async () => {
+        const res = await axios.get(`${import.meta.env.VITE_ORG_API}available-gateMate/${eventId}`, { withCredentials: true })
+        if (res.data) {
+            setAvailableMates(res?.data?.GateMates)
+        }
+    }
+    const addMate = async (gateMateId) => {
+        const res = await axios.put(`${import.meta.env.VITE_ORG_API}add-existing-mate-to-event`, { eventId, gateMateId }, { withCredentials: true })
+        if (res.data) console.log(res?.data);
     }
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100'>
@@ -132,17 +143,38 @@ const AssignGateMate = () => {
                             </form>
                         </DialogContent>
                     </Dialog>
-                    <Dialog>
-                        <DialogTrigger className={'bg-blue-500 py-2 px-4 rounded-md text-white flex items-center gap-2'}><IoMdAdd size={20} /> Existing GateMate</DialogTrigger>
+                    <Dialog >
+                        <DialogTrigger className={'bg-blue-500 py-2 px-4 rounded-md text-white flex items-center gap-2'} onClick={nonAssignedMates}><IoMdAdd size={20} />Existing GateMate</DialogTrigger>
                         <DialogContent className="flex flex-col justify-center mt-10">
                             <DialogHeader>
                                 <DialogTitle>
-                                    All GateMates
+                                    All Available GateMates
                                 </DialogTitle>
                                 <DialogDescription>
-                                    Manage and assign gateMates to events from here.
+
                                 </DialogDescription>
                             </DialogHeader>
+                            <Table>
+                                <TableCaption>A list of All Available GateMates </TableCaption>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead> Email </TableHead>
+                                        <TableHead className="text-right">Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                {availableMates.map((gateMate) => {
+                                    return (
+                                        <TableBody key={gateMate._id}>
+                                            <TableRow>
+                                                <TableCell>{gateMate.email}</TableCell>
+                                                <TableCell className="flex justify-end" onClick={() => addMate(gateMate._id)}>
+                                                    <IoMdAdd size={20} />
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    )
+                                })}
+                            </Table>
                         </DialogContent>
                     </Dialog>
                 </div>
