@@ -44,6 +44,6 @@ router.get("/get-event-details/:id", getEventDetails);
 router.post("/assignGateMate", assignGateMate);
 router.delete("/removeGateMate/:gateMateId", removeGateMate);
 router.get("/available-gateMate/:eventId", availableGateMate);
-router.put("/add-existing-mate-to-event", addExistingMateToEvent);
+router.patch("/add-existing-mate-to-event", addExistingMateToEvent);
 
 export default router;

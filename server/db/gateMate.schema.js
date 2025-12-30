@@ -17,10 +17,12 @@ const gateMateSchema = new mongoose.Schema({
     ref: "Organizer",
     required: true,
   },
-  eventId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Event",
-  },
+  eventId: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Event",
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

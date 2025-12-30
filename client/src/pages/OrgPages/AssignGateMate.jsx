@@ -57,7 +57,7 @@ const AssignGateMate = () => {
         }
     }
     const addMate = async (gateMateId) => {
-        const res = await axios.put(`${import.meta.env.VITE_ORG_API}add-existing-mate-to-event`, { eventId, gateMateId }, { withCredentials: true })
+        const res = await axios.patch(`${import.meta.env.VITE_ORG_API}add-existing-mate-to-event`, { eventId, gateMateId }, { withCredentials: true })
         if (res.data) console.log(res?.data);
     }
     return (

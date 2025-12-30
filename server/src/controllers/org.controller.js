@@ -367,9 +367,9 @@ export const addExistingMateToEvent = async (req, res) => {
         success: false,
       });
     const updatedGateMate = await GateMate.findByIdAndUpdate(
-      { _id: gateMateId },
+      gateMateId,
       {
-        $set: { eventId: eventId },
+        $addToSet: { eventIds: eventId },
       },
       { new: true }
     );
