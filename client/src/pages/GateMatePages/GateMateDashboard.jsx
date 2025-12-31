@@ -1,12 +1,30 @@
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import axios from 'axios';
 import { SquareArrowOutUpRight } from 'lucide-react';
-import React from 'react'
-import { FaArrowLeft } from "react-icons/fa6";
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { FaArrowLeft, FaVolumeHigh } from "react-icons/fa6";
+import { useNavigate, useParams } from 'react-router-dom';
 
 const GateMateDashboard = () => {
     const nav = useNavigate()
+    const [events, setEvents] = useState([])
+    const param = useParams()
+    const { gateMateId } = param
+    console.log(gateMateId);
+    const fetchGateMateDetails = async () => {
+        try {
+            const res = await axios.get(
+                `${import.meta.env.VITE_GATEMATE_API}details/${gateMateId}`
+            );
+            setEvents(res?.data?.gateMate?.eventId || []);
+        } catch (error) {
+            console.error("Failed to fetch gate mate details", error);
+        }
+    }
+    useEffect(() => {
+        fetchGateMateDetails()
+    }, [gateMateId])
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100'>
             <div>
@@ -29,13 +47,20 @@ const GateMateDashboard = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow>
-                                <TableCell className="font-medium">Event</TableCell>
-                                <TableCell> 31.12.26</TableCell>
-                                <TableCell>15:00pm</TableCell>
-                                <TableCell className="text-right  "><Badge className={'bg-red-500'}>Live</Badge></TableCell>
-                                <TableCell className="flex justify-end"> <SquareArrowOutUpRight /></TableCell>
-                            </TableRow>
+                            {
+                                events.map((event) => {
+                                    console.log("ok: ", event);
+                                    return (
+                                        <TableRow key={event._id}>
+                                            <TableCell className="font-medium">{event.title}</TableCell>
+                                            <TableCell>{new Date(event.date).toLocaleDateString("en-IN")}</TableCell>
+                                            <TableCell>{event.startTime}-{event.endTime}</TableCell>
+                                            <TableCell className="text-right  "><Badge className={'bg-red-500'}>Live</Badge></TableCell>
+                                            <TableCell className="flex justify-end"> <SquareArrowOutUpRight /></TableCell>
+                                        </TableRow>
+                                    )
+                                })
+                            }
                         </TableBody>
                     </Table>
                 </div>

@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import cors from "cors";
 import authRouter from "./src/routes/auth.routes.js";
 import orgRouter from "./src/routes/org.routes.js";
@@ -11,6 +12,7 @@ import cookieParser from "cookie-parser";
 import { stripeWebhook } from "./src/controllers/event.controller.js";
 
 const app = express();
+app.use(helmet());
 
 app.use(
   cors({
