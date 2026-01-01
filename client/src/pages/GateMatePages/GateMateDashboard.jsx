@@ -25,6 +25,24 @@ const GateMateDashboard = () => {
     useEffect(() => {
         fetchGateMateDetails()
     }, [gateMateId])
+    const getEventStatus = (date, startTime, endTime) => {
+        const now = new Date();
+
+        const eventDate = new Date(date);
+        const [startHour, startMinute] = startTime.split(":");
+        const [endHour, endMinute] = endTime.split(":");
+
+        const startDateTime = new Date(eventDate);
+        startDateTime.setHours(startHour, startMinute);
+
+        const endDateTime = new Date(eventDate);
+        endDateTime.setHours(endHour, endMinute);
+
+        if (now < startDateTime) return "UPCOMING";
+        if (now >= startDateTime && now <= endDateTime) return "LIVE";
+        return "PAST";
+    };
+
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100'>
             <div>
@@ -49,14 +67,26 @@ const GateMateDashboard = () => {
                         <TableBody>
                             {
                                 events.map((event) => {
-                                    console.log("ok: ", event);
+                                    const status = getEventStatus(event.date, event.startTime, event.endTime);
                                     return (
                                         <TableRow key={event._id}>
-                                            <TableCell className="font-medium">{event.title}</TableCell>
+                                            <TableCell className="font-medium w-[40%]">{event.title}</TableCell>
                                             <TableCell>{new Date(event.date).toLocaleDateString("en-IN")}</TableCell>
                                             <TableCell>{event.startTime}-{event.endTime}</TableCell>
-                                            <TableCell className="text-right  "><Badge className={'bg-red-500'}>Live</Badge></TableCell>
-                                            <TableCell className="flex justify-end"> <SquareArrowOutUpRight /></TableCell>
+                                            <TableCell className="text-right">
+                                                <Badge
+                                                    className={
+                                                        status === "LIVE"
+                                                            ? "bg-red-500"
+                                                            : status === "UPCOMING"
+                                                                ? "bg-yellow-500"
+                                                                : "bg-gray-400"
+                                                    }
+                                                >
+                                                    {status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell onClick={() => nav(`/gateMate/${gateMateId}/eventPage/${event._id}`)} className="flex justify-end"> <SquareArrowOutUpRight /></TableCell>
                                         </TableRow>
                                     )
                                 })

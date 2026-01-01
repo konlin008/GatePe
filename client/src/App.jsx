@@ -2,7 +2,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import "./App.css";
 import MainLayOut from "./layout/MainLayOut";
-import GateMateDashboard from "./pages/GateMatePages/GateMateDashboard";
 
 const ForYou = lazy(() => import("./pages/userPages/ForYou"));
 const Movies = lazy(() => import("./pages/userPages/Movies"));
@@ -17,6 +16,8 @@ const EditEvent = lazy(() => import("./pages/OrgPages/EditEvent"));
 const SuccessPage = lazy(() => import("./pages/paymentPages/SuccessPage"));
 const CancelPage = lazy(() => import("./pages/paymentPages/CancelPage"));
 const AssignGateMate = lazy(() => import("./pages/OrgPages/AssignGateMate"))
+const GateMateDashboard = lazy(() => import("./pages/GateMatePages/GateMateDashboard"))
+const GateMateEventDetails = lazy(() => import("./pages/GateMatePages/GateMateEventDetails"))
 
 
 function App() {
@@ -40,7 +41,8 @@ function App() {
         { path: "dashboard/editEvent/:eventId", element: <EditEvent /> },
         { path: "payment-success", element: <SuccessPage /> },
         { path: "payment-cancel", element: <CancelPage /> },
-        { path: "/GateMate/:gateMateId", element: <GateMateDashboard /> }
+        { path: "/GateMate/:gateMateId", element: <GateMateDashboard /> },
+        { path: "/GateMate/:gateMateId/eventPage/:eventId", element: <GateMateEventDetails /> }
       ],
     },
   ]);
