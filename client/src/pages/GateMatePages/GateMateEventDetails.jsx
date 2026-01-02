@@ -1,3 +1,4 @@
+import ScanTicket from '@/components/ScanTicket'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -11,6 +12,7 @@ const GateMateEventDetails = () => {
     const { gateMateId } = useParams()
     const { eventId } = useParams()
     const [eventDetails, setEventDetails] = useState()
+    const [open, setOpen] = useState(false);
     const fetchEventDetails = async () => {
         const res = await axios.get(`${import.meta.env.VITE_GATEMATE_API}event-details/${eventId}`, { withCredentials: true })
         console.log(res?.data);
@@ -26,16 +28,16 @@ const GateMateEventDetails = () => {
                 <CardHeader >
                     <CardTitle className={'text-xl w-[50%]'}>{eventDetails?.title}</CardTitle>
                     <CardAction className={'bg-blue-600 rounded-sm'}>
-                        <Dialog >
-                            <DialogTrigger className='flex py-2 px-2 text-white gap-2 font-semibold items-center'> <ScanLine /> Scan Ticket</DialogTrigger>
+                        <Dialog open={open} onOpenChange={setOpen}>
+                            <DialogTrigger asChild>
+                                <Button>Scan Ticket</Button>
+                            </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                                    <DialogDescription  >
-                                        This action cannot be undone. This will permanently delete your account
-                                        and remove your data from our servers.
-                                    </DialogDescription>
+                                    <DialogTitle>Scan Ticket</DialogTitle>
+                                    <DialogDescription>Point the camera at the QR code to verify the ticket.</DialogDescription>
                                 </DialogHeader>
+                                <ScanTicket open={open} />
                             </DialogContent>
                         </Dialog>
                     </CardAction>
