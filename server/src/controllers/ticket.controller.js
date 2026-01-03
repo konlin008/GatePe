@@ -1,7 +1,7 @@
-import express from "express";
 import Ticket from "../../db/ticket.schema.js";
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import mongoose from "mongoose";
 
 export const ticketDetails = async (req, res) => {
   try {
@@ -47,5 +47,36 @@ export const getCheckoutSession = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false });
+  }
+};
+export const ticketDetailsForGateMate = async (req, res) => {
+  try {
+    if (
+      !mongoose.Types.ObjectId.isValid(req.params.ticketId) ||
+      !mongoose.Types.ObjectId.isValid(req.params.eventId)
+    ) {
+      return res.status(400).json({ message: "Invalid QR", success: false });
+    }
+    const { ticketId, eventId } = req.params;
+    const ticketDetails = await Ticket.findOne({
+      _id: ticketId,
+      eventId,
+    })
+      .select("-paymentId")
+      .populate("userId", "name");
+    if (!ticketDetails) {
+      message: "Invalid Ticket or Wrong Event";
+      success: false;
+    }
+    return res.status(200).json({
+      ticketDetails,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
   }
 };
