@@ -5,14 +5,16 @@ import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader,
 import axios from 'axios'
 import { CalendarDays, ChartBar, Clock, MapPin, Tags, UserRound, } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { data, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 const GateMateEventDetails = () => {
     const { gateMateId } = useParams()
     const { eventId } = useParams()
     const [eventDetails, setEventDetails] = useState()
     const [scannedCode, setScannedCode] = useState(null)
-    const [ticketdetails, setTicketDetails] = useState()
+    const [ticketdetails, setTicketDetails] = useState(null)
+    const [error, setError] = useState()
 
 
     const fetchEventDetails = async () => {
@@ -21,8 +23,17 @@ const GateMateEventDetails = () => {
         if (res.data) setEventDetails(res?.data?.eventDetails)
     }
     const fetchTicketDetails = async () => {
-        const res = await axios.get(`${import.meta.env.VITE_TICKET_API}ticketdetails-gateMate/${scannedCode}/${eventId}`)
-        if (res?.data?.ticketDetails) setTicketDetails(res?.data?.ticketDetails)
+        if (!scannedCode) return
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_TICKET_API}ticketdetails-gateMate/${scannedCode}/${eventId}`)
+            if (res?.data?.success) {
+                setTicketDetails(res?.data?.ticketDetails)
+                return
+            }
+        } catch (error) {
+            if (error.status === 404) setError('Invalid Qr')
+            if (error.status === "false") setError(error?.response?.message)
+        }
     }
     useEffect(() => {
         fetchEventDetails()
@@ -30,6 +41,19 @@ const GateMateEventDetails = () => {
     useEffect(() => {
         fetchTicketDetails()
     }, [scannedCode])
+    const verifyTicket = async () => {
+        try {
+            console.log({ ticketdetails: ticketdetails });
+            const res = await axios.patch(`${import.meta.env.VITE_GATEMATE_API}verify-ticket/${ticketdetails._id}`)
+            if (res?.data?.success) {
+                toast.success(res?.data?.message || 'Ticket Verified')
+                setTicketDetails(null)
+                setScannedCode(null)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100'>
 
@@ -37,7 +61,7 @@ const GateMateEventDetails = () => {
                 <Card className={'rounded-sm py-10'}>
                     <CardHeader >
                         <CardTitle className={'text-xl w-[50%]'}>{eventDetails?.title}</CardTitle>
-                        <CardAction className={'bg-blue-600 rounded-sm'}>
+                        <CardAction className={'bg-blue-600 rounded-sm'} onClick={() => { setTicketDetails(null); setError(null) }}>
                             <Scanner onScan={setScannedCode} />
                         </CardAction>
                     </CardHeader>
@@ -67,7 +91,16 @@ const GateMateEventDetails = () => {
                     </CardFooter>
                 </Card>
                 {
-                    !scannedCode ? (<></>) :
+                    ticketdetails === null ? (error ?
+                        <>
+                            <Card className="rounded-sm px-10 py-8 border border-red-200 bg-red-50">
+                                <CardTitle className="text-lg font-medium text-red-600">
+                                    {error}
+                                </CardTitle>
+
+                            </Card>
+                        </>
+                        : <></>) :
 
                         <Card className={'rounded-sm py-10'}>
                             <CardHeader>
@@ -82,12 +115,19 @@ const GateMateEventDetails = () => {
                                 </div>
                                 <div className='flex gap-1 items-center'>
                                     <ChartBar />
-                                    <p className='font-semibold'>Ticket Details: <Badge className={'bg-green-600'}>{ticketdetails?.status}</Badge></p>
+                                    <p className='font-semibold'>Ticket Status: <Badge className={'bg-green-600'}>{ticketdetails?.status}</Badge></p>
                                 </div>
                             </CardContent>
-                            <CardFooter className={'flex justify-end'}>
-                                <CardAction ><Button className={'bg-blue-600 hover:bg-blue-500'}>Verify</Button></CardAction>
-                            </CardFooter>
+
+                            {
+                                ticketdetails.status === "CHECKED_IN" ? <></> : (
+                                    <CardFooter className={'flex justify-end'}>
+                                        <CardAction >
+                                            <Button className={'bg-blue-600 hover:bg-blue-500'} onClick={verifyTicket}>Verify</Button>
+                                        </CardAction>
+                                    </CardFooter>
+                                )
+                            }
                         </Card>
 
                 }

@@ -13,7 +13,7 @@ import { Button } from './ui/button'
 const Scanner = ({ onScan }) => {
     const [open, setOpen] = useState(false)
     const scannerRef = useRef(null)
-  
+
 
     useEffect(() => {
         if (!open) return
@@ -52,7 +52,7 @@ const Scanner = ({ onScan }) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-blue-600">
+                <Button className="bg-blue-600 hover:bg-blue-500">
                     Scan Ticket
                 </Button>
             </DialogTrigger>

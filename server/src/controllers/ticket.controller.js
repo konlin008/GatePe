@@ -51,23 +51,30 @@ export const getCheckoutSession = async (req, res) => {
 };
 export const ticketDetailsForGateMate = async (req, res) => {
   try {
+    const { ticketId, eventId } = req.params;
+    if (!ticketId || !eventId)
+      return res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
     if (
-      !mongoose.Types.ObjectId.isValid(req.params.ticketId) ||
-      !mongoose.Types.ObjectId.isValid(req.params.eventId)
+      !mongoose.Types.ObjectId.isValid(ticketId) ||
+      !mongoose.Types.ObjectId.isValid(eventId)
     ) {
       return res.status(400).json({ message: "Invalid QR", success: false });
     }
-    const { ticketId, eventId } = req.params;
+
     const ticketDetails = await Ticket.findOne({
       _id: ticketId,
       eventId,
     })
       .select("-paymentId")
       .populate("userId", "name");
-    if (!ticketDetails) {
-      message: "Invalid Ticket or Wrong Event";
-      success: false;
-    }
+    if (!ticketDetails)
+      return res.status(404).json({
+        message: "Invalid Ticket or Wrong Event",
+        success: false,
+      });
     return res.status(200).json({
       ticketDetails,
       success: true,
