@@ -3,7 +3,9 @@ import { lazy, Suspense } from "react";
 import "./App.css";
 import MainLayOut from "./layout/MainLayOut";
 
+
 const ForYou = lazy(() => import("./pages/userPages/ForYou"));
+const UserAuth = lazy(() => import("./pages/userPages/UserAuth"))
 const Movies = lazy(() => import("./pages/userPages/Movies"));
 const Sports = lazy(() => import("./pages/userPages/Sports"));
 const EventDetails = lazy(() => import("./pages/userPages/EventDetails"));
@@ -29,6 +31,7 @@ function App() {
       </Suspense>,
       children: [
         { path: "", element: <ForYou /> },
+        { path: "/login", element: <UserAuth /> },
         { path: "Movies", element: <Movies /> },
         { path: "Sports", element: <Sports /> },
         { path: "eventDetails/:eventId", element: <EventDetails /> },

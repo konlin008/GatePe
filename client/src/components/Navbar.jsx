@@ -24,6 +24,7 @@ import axios from 'axios'
 import NavbarFooter from './NavbarFooter'
 import { useAppStore } from '@/app/appStore'
 import LoadingSpinner from './LoadingSpinner'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -53,14 +54,12 @@ const indianCities = [
 
 
 const Navbar = () => {
-    const [open, setOpen] = React.useState(false)
-    const [value, setValue] = React.useState("")
-    const { loginWithRedirect } = useAuth0();
+    const [open, setOpen] = useState(false)
+    const [value, setValue] = useState("")
+    const nav = useNavigate()
     const { logout } = useAuth0();
     const { user, isAuthenticated, } = useAuth0();
     const [isloading, setIsLoading] = useState(null)
-
-
     const { userData, login, setLocation, } = useAppStore();
 
 
@@ -175,7 +174,7 @@ const Navbar = () => {
                             <>
                                 <Button
                                     className={'bg-blue-600 hover:bg-blue-500'}
-                                    onClick={() => loginWithRedirect()}
+                                    onClick={() => nav('/login')}
                                 >
                                     Login</Button>
                             </>
