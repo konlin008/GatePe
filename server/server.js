@@ -27,7 +27,7 @@ app.post(
   express.raw({ type: "application/json" }),
   stripeWebhook
 );
-app.use(express.json());
+  app.use(express.json());
 
 connectDb();
 

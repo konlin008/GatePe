@@ -1,12 +1,52 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Frontend Architecture
 
-Currently, two official plugins are available:
+### Overview
+This is a React + Vite frontend application designed for the GatePe payment platform. It provides a modern, responsive UI with optimized performance through Vite's fast build tooling and Hot Module Replacement (HMR).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Tech Stack
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: CSS/Tailwind CSS
+- **State Management**: Zustand
+- **HTTP Client**: Axios
+- **Routing**: React Router v6
+- **Linting**: ESLint
 
-## Expanding the ESLint configuration
+### Folder Structure
+```
+src/
+├── components/       # Reusable UI components
+├── pages/           # Page-level components
+├── hooks/           # Custom React hooks
+├── store/           # Zustand store configuration
+├── services/        # API service calls
+├── utils/           # Utility functions
+├── styles/          # Global styles
+└── App.jsx          # Main application component
+```
+### Routing
+Navigation is handled by React Router with the following main routes:
+- Dashboard
+- Payment flows
+- User profile
+- Transactions
+- Settings
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### State Management
+- **Global State**: Redux Toolkit manages application-wide state (user auth, transactions, payments)
+- **Local State**: React hooks for component-specific state
+- **API Cache**: Optimized caching for API responses
+
+### API Integration
+- Centralized API client in `services/`
+- Interceptors for authentication tokens
+- Error handling and loading states
+- Request/response transformation
+
+### Running Locally
+```bash
+npm install
+npm run dev
+```
+The application will start at `http://localhost:5173`
