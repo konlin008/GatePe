@@ -20,7 +20,7 @@ export const register = async (req, res) => {
       });
   } catch (error) {
     console.log(error);
-    res.status(500).json({
+    res.status(500).json({  
       message: "Something Went Wrong Internal Server Issue",
     });
   }
