@@ -1,59 +1,80 @@
+import { registerSchema, loginSchema } from "../../schemas/auth.schema.js";
 import User from "../../db/user.schema.js";
-import generateToken from "../../utils/generateToken.js";
+import bcrypt from "bcrypt";
+
 export const register = async (req, res) => {
   try {
-    const { email, name, picture } = req.body;
-    if (!email || !name)
+    const result = registerSchema.safeParse(req.body);
+    if (!result.success)
       return res.status(400).json({
-        message: "All fields are Required",
+        success: false,
+        message: "Inavlid Input",
+        error: result.error.flatten().fieldError,
       });
-    const newUser = await User.create({
+    const { email, password, name } = result.data;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        message: "User already exists",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({
       name,
       email,
-      profilePicture: picture,
+      password: hashedPassword,
     });
-    if (newUser)
-      return res.status(200).json({
-        message: "User Registered Successfully",
-        success: true,
-        userData: newUser,
-      });
+    return res.status(201).json({
+      message: "User Registered Successfully",
+      success: true,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({  
-      message: "Something Went Wrong Internal Server Issue",
+    return res.status(500).json({
+      success: false,
+      message: "Internal server Error",
     });
   }
 };
-export const check = async (req, res) => {
+export const login = async (req, res) => {
   try {
-    const { email } = req.body;
-    const existingUser = await User.findOne({
-      email,
-    });
-    if (!existingUser) {
-      return res.json({
-        exists: false,
+    const result = loginSchema.safeParse(req.body);
+    if (!result.success)
+      return res.status(400).json({
+        success: false,
+        message: "Inavlid Input",
+        error: result.error.flatten().fieldError,
       });
-    } else {
-      const token = generateToken(existingUser);
-      return res
-        .status(200)
-        .cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-          maxAge: 24 * 60 * 60 * 1000,
-        })
-        .json({
-          exists: true,
-          userData: existingUser,
-        });
+    const { email, password } = result.data;
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
     }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      message: "Something Went Wrong Internal Server Issue",
+    return res.status(500).json({
+      success: false,
+      message: "Internal server Error",
     });
   }
 };

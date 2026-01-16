@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     email: {
       type: String,
       required: true,
@@ -14,16 +9,22 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    profilePicture: {
+    name: {
+      type: String,
+      trim: true,
+    },
+    password: {
       type: String,
       required: true,
+      select: false,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
+    role: {
+      type: String,
+      enum: ["user", "admin", "organizer", "gateMate"],
+      default: "user",
     },
   },
-  { collection: "user" }
+  { timestamps: true }
 );
 
 export default mongoose.model("User", userSchema);
