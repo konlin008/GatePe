@@ -23,8 +23,12 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin", "organizer", "gateMate"],
       default: "user",
     },
+    refreshToken: {
+      type: String,
+      select: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("User", userSchema);
