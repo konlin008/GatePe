@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { Check, ChevronDown, Import } from "lucide-react"
@@ -19,12 +19,9 @@ import {
     PopoverTrigger,
 } from "./ui/popover"
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { useAuth0 } from "@auth0/auth0-react";
-import axios from 'axios'
 import NavbarFooter from './NavbarFooter'
-import { useAppStore } from '@/app/appStore'
-import LoadingSpinner from './LoadingSpinner'
 import { useNavigate } from 'react-router-dom'
+import useUserStore from '@/app/userStore'
 
 
 
@@ -57,44 +54,9 @@ const Navbar = () => {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
     const nav = useNavigate()
-    const { logout } = useAuth0();
-    const { user, isAuthenticated, } = useAuth0();
-    const [isloading, setIsLoading] = useState(null)
-    const { userData, login, setLocation, } = useAppStore();
-
-
-
-    useEffect(() => {
-        if (isAuthenticated && user) {
-            registerUser()
-        }
-    }, [user, isAuthenticated])
-    const registerUser = async () => {
-        setIsLoading(true)
-        try {
-            const result = await axios.post(`${import.meta.env.VITE_USER_API}check `, { email: user.email }, { withCredentials: true })
-            if (!result?.data.exists) {
-                const res = await axios.post(`${import.meta.env.VITE_USER_API}register`, {
-                    email: user.email,
-                    name: user.name,
-                    picture: user.picture
-                })
-                const userInfo = res?.data.userData
-                login(userInfo)
-            }
-            else {
-                const userInfo = result?.data.userData
-                login(userInfo)
-            }
-        } catch (error) {
-            alert(error)
-        }
-        finally {
-            setIsLoading(false)
-        }
-    }
-    if (isloading) {
-        return <LoadingSpinner />;
+    const { user } = useUserStore()
+    const setLocation = (city) => {
+        console.log(city);
     }
 
     return (
@@ -135,8 +97,6 @@ const Navbar = () => {
                                                         setValue(newValue);
                                                         const selectedCity = indianCities.find(c => c.value === newValue)?.label || "";
                                                         setLocation(selectedCity);
-
-
                                                         setOpen(false);
                                                     }}
                                                 >
@@ -158,15 +118,15 @@ const Navbar = () => {
                     </div>
 
                     {
-                        isAuthenticated ? (
+                        user.isLoggedIn ? (
                             <>
                                 <Avatar>
-                                    <AvatarImage src={userData?.profilePicture || "https://github.com/shadcn.png"} />
+                                    <AvatarImage src="https://github.com/shadcn.png" />
                                     <AvatarFallback>
-                                        {userData?.name?.[0] ?? "U"}
+                                        U
                                     </AvatarFallback>
                                 </Avatar>
-                                <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                <Button >
                                     Logout
                                 </Button>
                             </>

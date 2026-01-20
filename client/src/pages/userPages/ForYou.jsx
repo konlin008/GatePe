@@ -8,12 +8,11 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useAppStore } from '@/app/appStore'
 import axios from 'axios'
 import { Skeleton } from "@/components/ui/skeleton"
 
 const ForYou = () => {
-    const { location, setLocation } = useAppStore();
+    const location = 'kolkata'
     const [isOpen, setIsOpen] = useState(!location)
     const cities = [
         { value: "mumbai", label: "Mumbai" },
@@ -30,7 +29,6 @@ const ForYou = () => {
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(null)
     useEffect(() => {
-
         try {
 
             const fetchEvents = async () => {
@@ -57,7 +55,7 @@ const ForYou = () => {
                         </DialogDescription>
                         <div className=' mt-10'>
                             <Select value={location ?? undefined} onValueChange={(val) => {
-                                setLocation(val);
+                                // setLocation(val);
                                 setIsOpen(false);
                             }}>
                                 <SelectTrigger className="w-[200px]">

@@ -1,13 +1,13 @@
+import useUserStore from "@/app/userStore";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppStore } from "@/app/appStore";
 
 
 const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
     const navigate = useNavigate()
-    const { location } = useAppStore();
-    const user = useAppStore((state) => state.user);
+    const { user } = useUserStore()
+
     const onClickHandler = (tabName) => {
         if (!location) {
             alert("Select Location")
@@ -71,7 +71,7 @@ const NavbarFooter = () => {
                 </h2>
             </div>
             {
-                !user ? (<div className="flex space-x-4 items-center justify-between">
+                user.isLoggedIn ? (<div className="flex space-x-4 items-center justify-between">
                     <h2
                         onClick={() => onClickHandler("Organizer")}
                         className={

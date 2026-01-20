@@ -31,7 +31,6 @@ function App() {
       </Suspense>,
       children: [
         { path: "", element: <ForYou /> },
-        { path: "/login", element: <LoginPage /> },
         { path: "Movies", element: <Movies /> },
         { path: "Sports", element: <Sports /> },
         { path: "eventDetails/:eventId", element: <EventDetails /> },
@@ -48,6 +47,7 @@ function App() {
         { path: "/GateMate/:gateMateId/eventPage/:eventId", element: <GateMateEventDetails /> }
       ],
     },
+    { path: "/login", element: <LoginPage /> },
   ]);
 
   return (

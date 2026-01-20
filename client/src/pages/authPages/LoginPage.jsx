@@ -3,43 +3,63 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { useLogin, useRegister } from '@/queries/auth.queries'
+import { Loader } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import useUserStore from '@/app/userStore'
 
 const LoginPage = () => {
-    const [role, setRole] = useState('')
+    const { mutate: login, isSuccess: loginSuccess, data: loginData, isPending: loginPending, error: loginError } = useLogin()
+    const { mutate: register, isSuccess: registerSuccess, data: registerData, isPending: registerPending, error: registerError } = useRegister()
+    const { login: setLogin } = useUserStore()
+
     const [userName, setUserName] = useState('')
     const [password, setPassword] = useState('')
     const [name, setName] = useState('')
-    const handelLogin = async () => {
-        if (!role, !userName, !password) {
+    const navigate = useNavigate()
+    useEffect(() => {
+        if (loginSuccess) {
+            toast.success(loginData?.message || 'Login Successfull')
+            setLogin(loginData?.user?.role)
+            navigate('/')
+        }
+        if (loginError) {
+            toast.error(loginError?.response?.data?.message)
+        }
+    }, [loginSuccess, loginData, loginError])
+    useEffect(() => {
+        if (registerSuccess) {
+            toast.success(registerData?.message || 'User Registered Successfull', ' !please Login')
+            setPassword('')
+            setUserName('')
+            setName('')
+        }
+        if (registerError) {
+            toast.error(registerError?.response?.data?.message)
+        }
+    }, [registerSuccess, registerData, registerError])
+    const handelLogin = () => {
+        if (!userName || !password) {
             toast.error('All Fields Are Required')
+            return
         }
         else {
-            const data = { role, userName, password }
-            console.log(data);
+            login({ email: userName, password })
         }
     }
-
     const handelRegister = async () => {
         if (!name, !userName, !password) {
             toast.error('All Fields Are Required')
         }
         else {
-            const data = { name, userName, password }
-            console.log(data);
+            register({ name, email: userName, password })
         }
     }
 
     return (
-        <div className='px-60 py-20 min-h-screen bg-gradient-to-b from-blue-100 via-white to-blue-100 flex justify-center '>
+        <div className='min-h-screen bg-gradient-to-b from-blue-100 via-white to-blue-100 flex justify-center items-center '>
             <div className="flex w-full max-w-sm flex-col gap-6 ">
                 <Tabs defaultValue="account" >
                     <TabsList>
@@ -69,7 +89,9 @@ const LoginPage = () => {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button onClick={handelRegister}>Save changes</Button>
+                                <Button disabled={registerPending} onClick={handelRegister}> {
+                                    registerPending ? <><Loader className='animate-spin' />Please Wait</> : 'Register'
+                                }</Button>
                             </CardFooter>
                         </Card>
                     </TabsContent>
@@ -90,22 +112,13 @@ const LoginPage = () => {
                                     <Label htmlFor="tabs-password">password</Label>
                                     <Input id="tabs-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                                 </div>
-                                <div>
-                                    <Select onValueChange={value => setRole(value)} >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Account Type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="admin">Admin</SelectItem>
-                                            <SelectItem value="user">User</SelectItem>
-                                            <SelectItem value="organizer">Organizer</SelectItem>
-                                            <SelectItem value="gateMate">GateMate</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
                             </CardContent>
                             <CardFooter >
-                                <Button onClick={handelLogin}>Login</Button>
+                                <Button disabled={loginPending} onClick={handelLogin} className={'w-fit'}>
+                                    {
+                                        loginPending ? <><Loader className='animate-spin' />Please Wait</> : 'Login'
+                                    }
+                                </Button>
                             </CardFooter>
                         </Card>
                     </TabsContent>

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import EventCard from '@/components/EventCard'
 import axios from 'axios'
-import { useAppStore } from '@/app/appStore'
 
 const Movies = () => {
-    const { location } = useAppStore();
+    const location = 'kolkata'
     const [events, setEvents] = useState([])
     useEffect(() => {
         try {
