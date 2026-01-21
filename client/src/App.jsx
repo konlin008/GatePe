@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import "./App.css";
 import MainLayOut from "./layout/MainLayOut";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 
 const ForYou = lazy(() => import("./pages/userPages/ForYou"));
@@ -26,7 +27,7 @@ function App() {
   const appRouter = createBrowserRouter([
     {
       path: "/",
-      element: <Suspense fallback={<h2>Loading page...</h2>}>
+      element: <Suspense fallback={<LoadingSpinner />}>
         <MainLayOut />
       </Suspense>,
       children: [

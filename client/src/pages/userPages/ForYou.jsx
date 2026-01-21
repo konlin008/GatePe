@@ -10,10 +10,21 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import axios from 'axios'
 import { Skeleton } from "@/components/ui/skeleton"
+import { useLocationStore } from '@/app/locationStore'
+import { useGetEventsByLocation } from '@/queries/user.queries'
 
 const ForYou = () => {
-    const location = 'kolkata'
+    const { location, setLocation } = useLocationStore()
     const [isOpen, setIsOpen] = useState(!location)
+    const [events, setEvents] = useState([])
+    const { isPending, data, isSuccess, error } = useGetEventsByLocation(location)
+    useEffect(() => {
+        if (isSuccess) {
+            console.log(data);
+            setEvents(data?.data?.events)
+        }
+    }, [data, isSuccess, error])
+
     const cities = [
         { value: "mumbai", label: "Mumbai" },
         { value: "delhi", label: "Delhi" },
@@ -26,24 +37,7 @@ const ForYou = () => {
         { value: "jaipur", label: "Jaipur" },
         { value: "lucknow", label: "Lucknow" },
     ];
-    const [events, setEvents] = useState([])
-    const [loading, setLoading] = useState(null)
-    useEffect(() => {
-        try {
 
-            const fetchEvents = async () => {
-                setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_EVENT_API}getEventsByCatgory?location=${location}`)
-                if (res.data.events) {
-                    setEvents(res.data.events)
-                }
-                setLoading(false)
-            }
-            fetchEvents()
-        } catch (error) {
-            console.log(error);
-        }
-    }, [])
     return (
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -55,7 +49,7 @@ const ForYou = () => {
                         </DialogDescription>
                         <div className=' mt-10'>
                             <Select value={location ?? undefined} onValueChange={(val) => {
-                                // setLocation(val);
+                                setLocation(val);
                                 setIsOpen(false);
                             }}>
                                 <SelectTrigger className="w-[200px]">
@@ -74,7 +68,7 @@ const ForYou = () => {
                 </DialogContent>
             </Dialog>
             <div className='flex flex-col space-y-10 px-60 py-20 h-fit min-h-screen bg-gradient-to-b from-blue-100 via-white to-blue-100  '>
-                {loading
+                {isPending
                     ? <div className='flex space-x-10'>
                         {
                             [1, 2, 3, 4].map((i) => (

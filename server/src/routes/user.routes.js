@@ -3,7 +3,7 @@ import {
   checkoutSessions,
   getEventsByCatagories,
   getThisWeekEvent,
-} from "../controllers/event.controller.js";
+} from "../controllers/user.controller.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();

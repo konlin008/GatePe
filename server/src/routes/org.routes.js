@@ -29,7 +29,7 @@ router.post(
     { name: "image2", maxCount: 1 },
   ]),
 
-  listNewEvent
+  listNewEvent,
 );
 router.put(
   "/update-event/:id",
@@ -37,7 +37,7 @@ router.put(
     { name: "image1", maxCount: 1 },
     { name: "image2", maxCount: 1 },
   ]),
-  updateEventDetails
+  updateEventDetails,
 );
 router.get("/get_all_events", getEventsByOrgId);
 router.get("/get-event-details/:id", getEventDetails);
