@@ -1,7 +1,8 @@
 import express from "express";
 import {
-  authFlowCheck,
   login,
+  logout,
+  me,
   refresh,
   register,
 } from "../controllers/auth.controller.js";
@@ -11,6 +12,7 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.post("/refresh", refresh);
+router.post("/logout", isAuthenticated, logout);
+router.get("/me", isAuthenticated, me);
 
-router.get("/test", isAuthenticated, authFlowCheck);
 export default router;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { Check, ChevronDown, Import } from "lucide-react"
@@ -22,6 +22,9 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import NavbarFooter from './NavbarFooter'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/app/userStore'
+import { useLogout } from '@/queries/auth.queries'
+import { toast } from 'sonner'
+import { useLocationStore } from '@/app/locationStore'
 
 
 
@@ -51,14 +54,22 @@ const indianCities = [
 
 
 const Navbar = () => {
+    const { mutate: logout, isPending, isSuccess, data, error } = useLogout()
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
     const nav = useNavigate()
     const { user } = useUserStore()
-    const setLocation = (city) => {
-        console.log(city);
-    }
+    const { setLocation } = useLocationStore()
 
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success(data?.message)
+        }
+        if (error) {
+            toast.error(error?.response?.data?.message);
+        }
+    }, [isSuccess, data, error])
     return (
         <nav className='sticky top-0 z-50 bg-white shadow-md'>
             <div className='h-18 w-full px-60   flex items-center justify-between sticky top-0'>
@@ -126,7 +137,7 @@ const Navbar = () => {
                                         U
                                     </AvatarFallback>
                                 </Avatar>
-                                <Button >
+                                <Button disabled={isPending} onClick={logout}>
                                     Logout
                                 </Button>
                             </>

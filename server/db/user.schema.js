@@ -23,6 +23,11 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin", "organizer", "gateMate"],
       default: "user",
     },
+    organizerStatus: {
+      type: String,
+      enum: ["none", "pending", "approved", "rejected"],
+      default: "none",
+    },
     refreshToken: {
       type: String,
       select: false,

@@ -14,7 +14,6 @@ export const getEventsByCatagories = async (req, res) => {
     if (!location) {
       return res.status(400).json({
         message: "Bad Request",
-        success: false,
       });
     }
     if (!category) {
@@ -24,13 +23,12 @@ export const getEventsByCatagories = async (req, res) => {
       });
       if (!events || events.length === 0) {
         return res.status(202).json({
+          events: [],
           message: `No Events Found in ${location}`,
-          success: true,
         });
       }
       return res.status(200).json({
         events,
-        success: true,
       });
     } else {
       const events = await Event.find({
@@ -39,21 +37,19 @@ export const getEventsByCatagories = async (req, res) => {
         date: { $gte: tomorrow },
       });
       if (!events || events.length === 0) {
-        return res.status(202).json({
+        return res.status(200).json({
+          events: [],
           message: `No ${category} Events Found in ${location}`,
-          success: true,
         });
       }
       return res.status(200).json({
         events,
-        success: true,
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
       message: "Internal Server Error",
-      success: false,
     });
   }
 };
@@ -63,7 +59,6 @@ export const getThisWeekEvent = async (req, res) => {
 
     if (!location) {
       return res.status(400).json({
-        success: false,
         message: "Location is required",
       });
     }
@@ -82,18 +77,15 @@ export const getThisWeekEvent = async (req, res) => {
 
     if (!events || events.length === 0) {
       return res.status(404).json({
-        success: false,
         message: `No events found for this week at ${location}`,
       });
     }
     return res.status(200).json({
-      success: true,
       data: events,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      success: false,
       message: "Server Error",
     });
   }
@@ -106,7 +98,6 @@ export const checkoutSessions = async (req, res) => {
     const event = await Event.findById(eventDetails.eventId);
     if (event.availableTickets < eventDetails.quantity) {
       return res.status(400).json({
-        success: false,
         message: "Not Enough Available",
       });
     }
@@ -140,7 +131,6 @@ export const checkoutSessions = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      success: false,
       message: "Server Error",
     });
   }
@@ -152,7 +142,7 @@ export const stripeWebhook = async (req, res) => {
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (error) {
     console.log("Webhook Verfication Failed:", error.message);
@@ -175,7 +165,7 @@ export const stripeWebhook = async (req, res) => {
         },
         {
           new: true,
-        }
+        },
       );
       if (!updatedEvent) {
         await stripe.refunds.create({ payment_intent: session.payment_intent });
@@ -183,7 +173,7 @@ export const stripeWebhook = async (req, res) => {
         return res.status(200).send("Refunded due to insufficient tickets");
       } else {
         console.log(
-          `Tickets reduced successfully: ${quantity} for event ${eventId}`
+          `Tickets reduced successfully: ${quantity} for event ${eventId}`,
         );
       }
       const ticket = await Ticket.create({

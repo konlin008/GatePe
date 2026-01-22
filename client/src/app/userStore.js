@@ -1,30 +1,26 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+const initialState = {
+  user: {
+    isLoggedIn: false,
+    role: "",
+  },
+};
+
 const useUserStore = create(
   persist(
     (set) => ({
-      user: {
-        isLoggedIn: false,
-        role: "",
-      },
+      ...initialState,
+
       login: (role) =>
-        set((state) => ({
+        set({
           user: {
-            ...state.user,
             isLoggedIn: true,
             role,
           },
-        })),
-
-      logOut: () =>
-        set((state) => ({
-          user: {
-            ...state.user,
-            isLoggedIn: false,
-            role: "",
-          },
-        })),
+        }),
+      logOut: () => set(initialState),
     }),
     {
       name: "user-storage",

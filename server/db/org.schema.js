@@ -1,23 +1,26 @@
 import mongoose from "mongoose";
 
-const orgSchema = new mongoose.Schema({
-  email: {
-    type: String,
+const orgDetailsSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
     unique: true,
-    lowercase: true,
-    trim: true,
   },
-  password: {
-    type: String,
-    required: true,
-    select: false,
-  },
-  orgName: {
+  fullName: {
     type: String,
     required: true,
   },
-  orgType: {
+  organizerType: {
+    type: String,
+    enum: ["individual", "company", "college"],
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  state: {
     type: String,
     required: true,
   },
@@ -25,10 +28,11 @@ const orgSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  city: {
+  status: {
     type: String,
-    required: true,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
   },
 });
 
-export default mongoose.model("Org", orgSchema);
+export default mongoose.model("OrganizerDetails", orgDetailsSchema);

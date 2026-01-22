@@ -1,78 +1,41 @@
 import bcrypt from "bcrypt";
-import Org from "../../db/org.schema.js";
+import OrganizerDetails from "../../db/org.schema.js";
 import generateToken from "../../utils/generateToken.js";
 import { deleteMedia, uploadMedia } from "../../utils/cloudinary.js";
 import Event from "../../db/event.schema.js";
 import { hashPassword } from "../../utils/password.js";
 import GateMate from "../../db/gateMate.schema.js";
-import { json } from "express";
+import { objectIdSchema } from "../../schemas/objectId.schema.js";
+import User from "../../db/user.schema.js";
 
-export const orgRegister = async (req, res) => {
+export const organizerDetails = async (req, res) => {
   try {
-    const { email, password, orgName, orgType, contactNo, city } = req.body;
-    if (!email || !password || !orgName || !orgType || !contactNo || !city)
-      return res
-        .status(400)
-        .json({ success: false, message: "All Fields are Required" });
-    const org = await Org.findOne({ email });
-    if (org)
-      return res
-        .status(400)
-        .json({ success: false, message: "Email Already Registered" });
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newOrg = await Org.create({
-      email,
-      password: hashedPassword,
-      orgName,
-      orgType,
-      contactNo,
-      city,
-    });
-    const org_data = await Org.findById(newOrg._id).select("-password");
-    return res.status(200).json({
-      success: true,
-      message: "Organizer Registered Successfully",
-      org_data,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Something Went Wrong",
-    });
-  }
-};
-export const orgLogin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const id = req.id;
+    const { fullName, organizerType, city, contactNo } = req.body;
+
+    if (!fullName || !organizerType || !city || !contactNo)
+      return res.status(400).json({ message: "All Fields are Required" });
+
+    const existingRequest = await OrganizerDetails.findOne({ userId: id });
+
+    if (existingRequest) {
       return res.status(400).json({
-        success: false,
-        message: "All fields are required ",
+        message: "Organizer request already submitted",
       });
     }
-    const org = await Org.findOne({ email });
-    if (!org)
-      return res.status(404).json({
-        success: false,
-        message: "Email not registered",
-      });
-    else {
-      const token = generateToken(org);
-      return res
-        .status(200)
-        .cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-          maxAge: 24 * 60 * 60 * 1000,
-        })
-        .json({
-          org,
-          success: true,
-          message: `welcome ${org?.orgName}`,
-        });
-    }
+
+    await OrganizerDetails.create({
+      userId: id,
+      fullName,
+      organizerType,
+      city,
+      contactNo,
+      status: "pending",
+    });
+    await User.findByIdAndUpdate(id, { organizerStatus: "pending" });
+    return res.status(200).json({
+      message: "Request Submitted",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -184,16 +147,22 @@ export const getEventsByOrgId = async (req, res) => {
 };
 export const getEventDetails = async (req, res) => {
   try {
-    const eventId = req.params.id;
-    const eventDetails = await Event.findOne({ _id: eventId });
+    const idResult = objectIdSchema.safeParse(req.params.id);
+    if (!idResult.success) {
+      return res.status(400).json({
+        message: idResult.error.issues[0].message,
+        success: false,
+      });
+    }
+    const eventDetails = await Event.findOne({ _id: idResult.data });
     if (!eventDetails)
       return res.status(404).json({
         message: "Event Not Found",
         success: false,
       });
-    return res.status(202).json({
+    return res.status(200).json({
       eventDetails,
-      success: false,
+      success: true,
     });
   } catch (error) {
     console.log(error);
@@ -371,7 +340,7 @@ export const addExistingMateToEvent = async (req, res) => {
       {
         $addToSet: { eventIds: eventId },
       },
-      { new: true }
+      { new: true },
     );
     if (updatedGateMate)
       return res.status(200).json({

@@ -4,17 +4,17 @@ import bcrypt from "bcrypt";
 import generateAccessToken from "../../utils/generateAccessToke.js";
 import generateRefreshToken from "../../utils/generateRefereshToken.js";
 import jwt from "jsonwebtoken";
-import { success } from "zod";
 
 export const register = async (req, res) => {
   try {
     const result = registerSchema.safeParse(req.body);
-    if (!result.success)
+    if (!result.success) {
+      const errors = z.treeifyError(result.error).fieldErrors;
       return res.status(400).json({
-        success: false,
         message: "Inavlid Input",
-        error: result.error.flatten().fieldError,
+        errors,
       });
+    }
     const { email, password, name } = result.data;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -35,7 +35,6 @@ export const register = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      success: false,
       message: "Internal server Error",
     });
   }
@@ -45,7 +44,6 @@ export const login = async (req, res) => {
     const result = loginSchema.safeParse(req.body);
     if (!result.success)
       return res.status(400).json({
-        success: false,
         message: "Inavlid Input",
         error: result.error.flatten().fieldError,
       });
@@ -53,18 +51,16 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(401).json({
-        success: false,
         message: "Invalid email or password",
       });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
-        success: false,
         message: "Invalid email or password",
       });
     }
-    const accessToken = generateAccessToken(user._id, user.role);
+    const accessToken = generateAccessToken(user._id, user.id);
     const refreshToken = generateRefreshToken(user._id, user.role);
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
@@ -96,7 +92,6 @@ export const login = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      success: false,
       message: "Internal server Error",
     });
   }
@@ -107,7 +102,6 @@ export const refresh = async (req, res) => {
     if (!refreshToken) {
       return res.status(401).json({
         message: "Unauthorized",
-        success: false,
       });
     }
     let decoded;
@@ -115,7 +109,6 @@ export const refresh = async (req, res) => {
       decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
     } catch (err) {
       return res.status(401).json({
-        success: false,
         message: "Invalid or expired refresh token",
       });
     }
@@ -123,7 +116,6 @@ export const refresh = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         message: "User Not Found",
-        success: false,
       });
     }
 
@@ -148,23 +140,55 @@ export const refresh = async (req, res) => {
       })
       .json({
         message: "token updated",
-        success: true,
       });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      success: false,
       message: "Internal server Error",
     });
   }
 };
-export const authFlowCheck = async (req, res) => {
+export const logout = async (req, res) => {
   try {
-    return res.status(200).json({
-      message: "fine",
-    });
+    const userId = req.id;
+    const isProd = process.env.NODE_ENV === "production";
+    await User.findByIdAndUpdate(userId, { refreshToken: null });
+    return res
+      .clearCookie("accessToken", {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+      })
+      .clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+      })
+      .status(200)
+      .json({
+        message: "Logged out successfully",
+      });
   } catch (error) {
     console.log(error);
-    return res.status(500);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+export const me = async (req, res) => {
+  try {
+    const id = req.id;
+    const user = await User.findById(id);
+    if (!user)
+      return res.status(404).json({
+        message: "user not found",
+      });
+    return res.status(200).json({
+      role: user.role,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };

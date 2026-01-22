@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { useEventDetails } from '@/queries/user.queries'
 import axios from 'axios'
 import { Award, CalendarDays, IndianRupee, MapPin, Minus, Plus, Timer } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
@@ -21,26 +22,18 @@ const EventDetails = () => {
     const [eventDetails, setEventDetails] = useState({})
     const [ticketQuantity, setTicketQuantity] = useState(1)
     const [maximumTickets, setMaximumTickets] = useState(10)
+    const { data, isSuccess, error } = useEventDetails(id)
     useEffect(() => {
-        try {
-            const fetchEventDetails = async () => {
-                const res = await axios.get(`${import.meta.env.VITE_ORG_API}get-event-details/${id}`, { withCredentials: true })
-                console.log(res?.data);
-                if (res?.data.eventDetails) {
-                    const ev = res.data.eventDetails;
-                    setEventDetails(ev);
-
-
-                    const maxAllowed = Math.min(ev.availableTickets, 10);
-                    setMaximumTickets(maxAllowed);
-                }
-            }
-            fetchEventDetails()
-
-        } catch (error) {
-            console.error(error);
+        if (isSuccess) {
+            setEventDetails(data?.data?.eventDetails)
+            const maxAllowed = Math.min(data?.data?.eventDetails?.availableTickets, 10);
+            setMaximumTickets(maxAllowed);
         }
-    }, [id])
+        if (error) {
+            console.log(error.response.data.message);
+        }
+    }, [isSuccess, data, error])
+
     const handelPay = async () => {
         try {
             const res = await axios.post(`${import.meta.env.VITE_EVENT_API}create-checkout-session`, {

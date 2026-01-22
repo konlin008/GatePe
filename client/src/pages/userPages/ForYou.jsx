@@ -8,7 +8,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import axios from 'axios'
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLocationStore } from '@/app/locationStore'
 import { useGetEventsByLocation } from '@/queries/user.queries'
@@ -84,18 +83,20 @@ const ForYou = () => {
                         }
                     </div >
                     :
-
                     <div >
-                        <h1 className='text-2xl font-semibold mb-10'>Events For You</h1>
-                        <div className='flex space-x-10'>
-                            {
-                                events.map((e) => {
-                                    return (<div key={e._id} >
-                                        <EventCard event={e} />
-                                    </div>)
-                                })
-                            }
-                        </div>
+                        {events.length > 0 ? <>
+                            <h1 className='text-2xl font-semibold mb-10'>Events For You</h1>
+                            <div className='flex space-x-10'>
+                                {
+                                    events.map((e) => {
+                                        return (<div key={e._id} >
+                                            <EventCard event={e} />
+                                        </div>)
+                                    })
+                                }
+                            </div>
+                        </> : <><h1 className='text-2xl font-semibold mb-10'>{data?.data?.message}</h1></>}
+
                     </div>
                 }
             </div >
