@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import "./App.css";
 import MainLayOut from "./layout/MainLayOut";
 import LoadingSpinner from "./components/LoadingSpinner";
+import OrgRequestStatusPage from "./pages/userPages/OrgRequestStatusPage";
 
 
 const ForYou = lazy(() => import("./pages/userPages/ForYou"));
@@ -36,7 +37,10 @@ function App() {
         { path: "Sports", element: <Sports /> },
         { path: "eventDetails/:eventId", element: <EventDetails /> },
         { path: "Organizer", element: <Org /> },
-        { path: "org-registration", element: <OrgRegistration /> },
+        {
+          path: "become-organizer", element: <OrgRegistration />,
+        },
+        { path: "status-page/:status", element: <OrgRequestStatusPage /> },
         { path: "org-login", element: <OrgLogin /> },
         { path: "dashboard", element: <Dashboard />, },
         { path: "dashboard/assign-gateMate/:eventId", element: <AssignGateMate /> },

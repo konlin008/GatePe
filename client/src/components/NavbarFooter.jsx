@@ -1,5 +1,6 @@
 import useUserStore from "@/app/userStore";
-import React, { useState } from "react";
+import { useRole } from "@/queries/user.queries";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -7,6 +8,24 @@ const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
     const navigate = useNavigate()
     const { user } = useUserStore()
+    const { isSuccess, data, } = useRole(user?.isLoggedIn)
+
+    const organizerHandler = () => {
+        if (!user.isLoggedIn) {
+            navigate('/login')
+        }
+        if (isSuccess) {
+            if (data?.role === 'user' && data.status === 'none') {
+                navigate('become-organizer')
+            }
+            if (data?.role === 'user' && (data?.status === 'pending' || data?.status === 'rejected')) {
+                navigate(`/status-page/${data?.status}`)
+            }
+            if (data?.role === 'organizer') {
+                navigate('organizer-dashboard')
+            }
+        }
+    }
 
     const onClickHandler = (tabName) => {
         if (!location) {
@@ -70,30 +89,28 @@ const NavbarFooter = () => {
                     Sports
                 </h2>
             </div>
-            {
-                user.isLoggedIn ? (<div className="flex space-x-4 items-center justify-between">
-                    <h2
-                        onClick={() => onClickHandler("Organizer")}
-                        className={
-                            active === "Organizer"
-                                ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
-                                : "text-gray-500 hover:text-gray-900 cursor-pointer"
-                        }
-                    >
-                        Organizer
-                    </h2>
-                    <h2
-                        onClick={() => onClickHandler("GateMate")}
-                        className={
-                            active === "GateMate"
-                                ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
-                                : "text-gray-500 hover:text-gray-900 cursor-pointer"
-                        }
-                    >
-                        GateMate
-                    </h2>
-                </div>) : null
-            }
+            <div className="flex space-x-4 items-center justify-between">
+                <h2
+                    onClick={organizerHandler}
+                    className={
+                        active === "Organizer"
+                            ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
+                            : "text-gray-500 hover:text-gray-900 cursor-pointer"
+                    }
+                >
+                    Organizer
+                </h2>
+                <h2
+                    onClick={() => onClickHandler("GateMate")}
+                    className={
+                        active === "GateMate"
+                            ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"
+                            : "text-gray-500 hover:text-gray-900 cursor-pointer"
+                    }
+                >
+                    GateMate
+                </h2>
+            </div>
         </div >
     );
 };

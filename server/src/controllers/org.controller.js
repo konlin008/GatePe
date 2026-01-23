@@ -1,49 +1,11 @@
-import bcrypt from "bcrypt";
-import OrganizerDetails from "../../db/org.schema.js";
-import generateToken from "../../utils/generateToken.js";
+
 import { deleteMedia, uploadMedia } from "../../utils/cloudinary.js";
 import Event from "../../db/event.schema.js";
 import { hashPassword } from "../../utils/password.js";
 import GateMate from "../../db/gateMate.schema.js";
 import { objectIdSchema } from "../../schemas/objectId.schema.js";
-import User from "../../db/user.schema.js";
 
-export const organizerDetails = async (req, res) => {
-  try {
-    const id = req.id;
-    const { fullName, organizerType, city, contactNo } = req.body;
 
-    if (!fullName || !organizerType || !city || !contactNo)
-      return res.status(400).json({ message: "All Fields are Required" });
-
-    const existingRequest = await OrganizerDetails.findOne({ userId: id });
-
-    if (existingRequest) {
-      return res.status(400).json({
-        message: "Organizer request already submitted",
-      });
-    }
-
-    await OrganizerDetails.create({
-      userId: id,
-      fullName,
-      organizerType,
-      city,
-      contactNo,
-      status: "pending",
-    });
-    await User.findByIdAndUpdate(id, { organizerStatus: "pending" });
-    return res.status(200).json({
-      message: "Request Submitted",
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Something Went Wrong",
-    });
-  }
-};
 
 export const listNewEvent = async (req, res) => {
   try {

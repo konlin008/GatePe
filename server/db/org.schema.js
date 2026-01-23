@@ -13,7 +13,6 @@ const orgDetailsSchema = new mongoose.Schema({
   },
   organizerType: {
     type: String,
-    enum: ["individual", "company", "college"],
     required: true,
   },
   city: {

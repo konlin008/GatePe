@@ -3,6 +3,10 @@ import Stripe from "stripe";
 import Ticket from "../../db/ticket.schema.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 import QRCode from "qrcode";
+import OrganizerDetails from "../../db/org.schema.js";
+import User from "../../db/user.schema.js";
+import { OrganizerDetailsSchema } from "../../schemas/organizerDetails.schema.js";
+import { z } from "zod";
 
 export const getEventsByCatagories = async (req, res) => {
   try {
@@ -87,6 +91,46 @@ export const getThisWeekEvent = async (req, res) => {
     console.error(error);
     return res.status(500).json({
       message: "Server Error",
+    });
+  }
+};
+export const requestAsOrganizer = async (req, res) => {
+  try {
+    const id = req.id;
+    const result = OrganizerDetailsSchema.safeParse(req.body);
+    if (!result.success) {
+      const errors = result.error.issues;
+      return res.status(400).json({
+        success: false,
+        errors,
+      });
+    }
+    const { fullName, organizerType, city, state, contactNo } = result.data;
+    const existingRequest = await OrganizerDetails.findOne({ userId: id });
+
+    if (existingRequest) {
+      return res.status(409).json({
+        message: "Organizer request already submitted",
+      });
+    }
+    await OrganizerDetails.create({
+      userId: id,
+      fullName,
+      organizerType,
+      city,
+      contactNo,
+      state,
+      status: "pending",
+    });
+    await User.findByIdAndUpdate(id, { organizerStatus: "pending" });
+    return res.status(200).json({
+      message: "Request Submitted",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Something Went Wrong",
     });
   }
 };

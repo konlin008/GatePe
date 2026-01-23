@@ -42,11 +42,14 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const result = loginSchema.safeParse(req.body);
-    if (!result.success)
+    if (!result.success) {
+      const errors = z.treeifyError(result.error).fieldErrors;
       return res.status(400).json({
-        message: "Inavlid Input",
-        error: result.error.flatten().fieldError,
+        success: false,
+        errors,
       });
+    }
+
     const { email, password } = result.data;
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
@@ -175,7 +178,7 @@ export const logout = async (req, res) => {
     });
   }
 };
-export const me = async (req, res) => {
+export const role = async (req, res) => {
   try {
     const id = req.id;
     const user = await User.findById(id);
@@ -185,6 +188,7 @@ export const me = async (req, res) => {
       });
     return res.status(200).json({
       role: user.role,
+      status: user.organizerStatus,
     });
   } catch (error) {
     return res.status(500).json({
