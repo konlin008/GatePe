@@ -53,18 +53,18 @@ const eventSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  organizer: {
+  organizerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Org",
     required: true,
   },
   imageUrlLandscape: {
     type: String,
-    required: true,
+    default: "",
   },
   imageUrlPortrait: {
     type: String,
-    required: true,
+    default: "",
   },
   createdAt: {
     type: Date,

@@ -6,50 +6,22 @@ import QRCode from "qrcode";
 import OrganizerDetails from "../../db/org.schema.js";
 import User from "../../db/user.schema.js";
 import { OrganizerDetailsSchema } from "../../schemas/organizerDetails.schema.js";
-import { z } from "zod";
+import { cityName } from "../../schemas/inputs.schema.js";
 
-export const getEventsByCatagories = async (req, res) => {
+export const getEventsByCity = async (req, res) => {
   try {
-    let { category, location } = req.query;
-    location = location.toLowerCase();
-    const tomorrow = new Date();
-    tomorrow.setHours(0, 0, 0, 0);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    if (!location) {
+    let result = cityName.safeParse(req.query.city);
+    if (!result.success) {
+      const errors = result.error.issues;
       return res.status(400).json({
-        message: "Bad Request",
+        success: false,
+        errors,
       });
     }
-    if (!category) {
-      const events = await Event.find({
-        city: location,
-        date: { $gte: tomorrow },
-      });
-      if (!events || events.length === 0) {
-        return res.status(202).json({
-          events: [],
-          message: `No Events Found in ${location}`,
-        });
-      }
-      return res.status(200).json({
-        events,
-      });
-    } else {
-      const events = await Event.find({
-        category,
-        city: location,
-        date: { $gte: tomorrow },
-      });
-      if (!events || events.length === 0) {
-        return res.status(200).json({
-          events: [],
-          message: `No ${category} Events Found in ${location}`,
-        });
-      }
-      return res.status(200).json({
-        events,
-      });
-    }
+    const city = result.data.toLocaleLowerCase();
+    const events = await Event.find({ city });
+    if (events.length === 0) return res.status(200).json({ events: [] });
+    return res.status(200).json({ events });
   } catch (error) {
     console.error(error);
     return res.status(500).json({

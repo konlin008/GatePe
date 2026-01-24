@@ -10,13 +10,13 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLocationStore } from '@/app/locationStore'
-import { useGetEventsByLocation } from '@/queries/user.queries'
+import { useGetEventsByCity } from '@/queries/user.queries'
 
 const ForYou = () => {
     const { location, setLocation } = useLocationStore()
     const [isOpen, setIsOpen] = useState(!location)
     const [events, setEvents] = useState([])
-    const { isPending, data, isSuccess, error } = useGetEventsByLocation(location)
+    const { isPending, data, isSuccess, error } = useGetEventsByCity(location)
     useEffect(() => {
         if (isSuccess) {
             console.log(data);

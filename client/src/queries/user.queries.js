@@ -1,15 +1,14 @@
-import { roleApi } from "@/apis/auth.api";
 import {
   eventDetailsApi,
-  getEventsByLocationApi,
+  getEventsByCityApi,
   requestAsOrganizerApi,
 } from "@/apis/user.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const useGetEventsByLocation = (location) => {
+export const useGetEventsByCity = (city) => {
   return useQuery({
-    queryKey: ["events-by-location", location],
-    queryFn: () => getEventsByLocationApi(location),
+    queryKey: ["events-by-city", city],
+    queryFn: () => getEventsByCityApi(city),
   });
 };
 export const useEventDetails = (id) => {
@@ -18,13 +17,7 @@ export const useEventDetails = (id) => {
     queryFn: () => eventDetailsApi(id),
   });
 };
-export const useRole = (loggedin) => {
-  return useQuery({
-    queryKey: ["role", loggedin],
-    queryFn: roleApi,
-    enabled: loggedin,
-  });
-};
+
 export const useReqAsOrganizer = () => {
   return useMutation({
     mutationFn: requestAsOrganizerApi,

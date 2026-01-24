@@ -1,6 +1,6 @@
 import useUserStore from "@/app/userStore";
-import { useRole } from "@/queries/user.queries";
-import React, { useEffect, useState } from "react";
+import { useRole } from "@/queries/auth.queries";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -21,7 +21,7 @@ const NavbarFooter = () => {
             if (data?.role === 'user' && (data?.status === 'pending' || data?.status === 'rejected')) {
                 navigate(`/status-page/${data?.status}`)
             }
-            if (data?.role === 'organizer') {
+            if (data?.role === 'organizer' && data.status === 'approved') {
                 navigate('organizer-dashboard')
             }
         }

@@ -1,6 +1,6 @@
-import { loginApi, logoutApi, registerApi } from "@/apis/auth.api";
+import { loginApi, logoutApi, registerApi, roleApi } from "@/apis/auth.api";
 import useUserStore from "@/app/userStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 export const useLogin = () => {
@@ -24,5 +24,12 @@ export const useLogout = () => {
       logOut();
       navigate("/login");
     },
+  });
+};
+export const useRole = (loggedin) => {
+  return useQuery({
+    queryKey: ["role", loggedin],
+    queryFn: roleApi,
+    enabled: loggedin,
   });
 };

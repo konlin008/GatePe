@@ -1,7 +1,7 @@
 import api from "./axios";
 
-export const getEventsByLocationApi = async (location) => {
-  return api.get(`user/getEventsByCatgory?location=${location}`);
+export const getEventsByCityApi = async (city) => {
+  return api.get(`user/get-events-by-city?city=${city}`);
 };
 export const eventDetailsApi = async (id) => {
   return api.get(`user/${id}`);

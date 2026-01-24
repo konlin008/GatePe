@@ -1,77 +1,66 @@
-
 import { deleteMedia, uploadMedia } from "../../utils/cloudinary.js";
 import Event from "../../db/event.schema.js";
 import { hashPassword } from "../../utils/password.js";
 import GateMate from "../../db/gateMate.schema.js";
-import { objectIdSchema } from "../../schemas/objectId.schema.js";
-
-
+import { objectIdSchema } from "../../schemas/inputs.schema.js";
+import { eventInputSchema } from "../../schemas/eventInput.schema.js";
 
 export const listNewEvent = async (req, res) => {
   try {
     const orgId = req.id;
+    const result = eventInputSchema.safeParse(req.body);
+    if (!result.success) {
+      const errors = result.error.issues;
+      return res.status(400).json({
+        success: false,
+        errors,
+      });
+    }
     const {
       title,
-      catagory,
+      category,
       description,
       date,
-      time,
-      duration,
+      startTime,
+      endTime,
       venue,
       city,
-      adress,
+      location,
       deadline,
       ticketPrice,
       ticketQuantity,
-    } = req.body;
-
+    } = result.data;
     const files = req.files || {};
     const image1 = files.image1 ? files.image1[0] : null;
     const image2 = files.image2 ? files.image2[0] : null;
+    let image1Url;
+    let image2Url;
 
-    if (
-      !title ||
-      !catagory ||
-      !description ||
-      !date ||
-      !time ||
-      !duration ||
-      !venue ||
-      !city ||
-      !adress ||
-      !deadline ||
-      !image1 ||
-      !image2 ||
-      !ticketPrice ||
-      !ticketQuantity
-    )
-      return res.status(400).json({
-        success: false,
-        message: "All Fields are Required",
-      });
-    const cloudeResImage1 = await uploadMedia(image1.path);
-    const image1Url = cloudeResImage1.secure_url;
+    if (image1 && image2) {
+      const cloudeResImage1 = await uploadMedia(image1.path);
+      image1Url = cloudeResImage1.secure_url;
 
-    const cloudeResImage2 = await uploadMedia(image2.path);
-    const image2Url = cloudeResImage2.secure_url;
+      const cloudeResImage2 = await uploadMedia(image2.path);
+      image2Url = cloudeResImage2.secure_url;
+    }
 
     const newEvent = await Event.create({
       title,
-      category: catagory,
+      category,
       description,
       date,
-      time,
-      duration,
+      startTime,
+      endTime,
       deadline,
       venue,
       city,
-      adress,
+      location,
       ticketPrice,
       ticketQuantity,
       availableTickets: ticketQuantity,
       imageUrlLandscape: image1Url,
       imageUrlPortrait: image2Url,
-      organizer: orgId,
+      organizerId: orgId,
     });
     if (newEvent)
       return res.status(200).json({

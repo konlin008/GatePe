@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import axios from 'axios'
 import { Loader2 } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Select,
     SelectContent,
@@ -14,22 +14,24 @@ import {
 } from "@/components/ui/select"
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
+import { useCreateNewEvent } from '@/queries/organizer.queries'
 
 const OrganizeEvents = () => {
     const navigate = useNavigate()
+    const { mutate, isPending, isSuccess, data, error } = useCreateNewEvent()
     const [formData, setFormData] = useState({
         title: '',
-        catagory: '',
+        category: '',
         description: '',
         date: '',
-        time: '',
-        duration: '',
+        startTime: '',
+        endTime: '',
         venue: '',
-        adress: '',
         city: '',
+        location: '',
         deadline: '',
-        ticketPrice: '',
-        ticketQuantity: null,
+        ticketPrice: 0,
+        ticketQuantity: 0,
         image1: null,
         image2: null,
 
@@ -87,33 +89,31 @@ const OrganizeEvents = () => {
 
     const handelSubmit = async (e) => {
         e.preventDefault()
-        console.log(formData);
-        setLoading(true)
-        try {
-            const data = new FormData();
+        const data = new FormData();
 
-            Object.keys(formData).forEach((key) => {
-                if (formData[key]) {
-                    data.append(key, formData[key])
-                }
-            })
-
-            const res = await axios.post(`${import.meta.env.VITE_ORG_API}create_new_event`, data, { withCredentials: true })
-            if (res?.data.success) {
-                toast(`${res?.data.message}` || 'Event Created successfully')
-                navigate('/dashboard')
+        Object.keys(formData).forEach((key) => {
+            if (formData[key]) {
+                data.append(key, formData[key])
             }
-        } catch (error) {
-            toast(`${error?.message}` || 'Somthing Went wrong')
-        }
-        setLoading(false)
+        })
+        mutate(data)
     }
+    useEffect(() => {
+        if (isSuccess) {
+            console.log(data);
+        }
+        if (error) {
+            if (error.status === 400) {
+                console.log(error.response.data.errors[0].message);
+            }
+        }
+    }, [isSuccess, data, error])
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100  to-white'>
             <Card className={'rounded-lg shadow-none border-none  bg-transparent'}>
                 <CardHeader>
                     <CardTitle className={'text-2xl'}>
-                        Set Up Your Event   
+                        Set Up Your Event
                     </CardTitle>
                     <CardDescription className={'text-md'}>
                         Provide essential details about your event to help attendees know what to expect.
@@ -137,16 +137,16 @@ const OrganizeEvents = () => {
                             />
                         </div>
                         <div className="grid gap-2 ">
-                            <Label htmlFor="catagory" className={"text-lg"}>
-                                Event Catagory
+                            <Label htmlFor="category" className={"text-lg"}>
+                                Event Category
                             </Label>
-                            <Input v
+                            <Input
                                 type="text"
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"Movie"}
-                                name='catagory'
-                                value={formData.catagory}
+                                name='category'
+                                value={formData.category}
                                 onChange={handelOnChange}
 
                             />
@@ -181,30 +181,29 @@ const OrganizeEvents = () => {
                             />
                         </div>
                         <div className="grid gap-2 ">
-                            <Label htmlFor="time" className={"text-lg"}>
-                                Event Time
+                            <Label htmlFor="startTime" className={"text-lg"}>
+                                Start Time
                             </Label>
                             <Input
                                 type="time"
                                 required
                                 className={"w-full border-gray-400"}
-                                name='time'
-                                value={formData.time}
+                                name='startTime'
+                                value={formData.startTime}
                                 onChange={handelOnChange}
 
                             />
                         </div>
                         <div className="grid gap-2 ">
-                            <Label htmlFor="duration" className={"text-lg"}>
-                                Duration
+                            <Label htmlFor="endTime" className={"text-lg"}>
+                                End Time
                             </Label>
                             <Input
-                                type="text"
+                                type="time"
                                 required
                                 className={"w-full border-gray-400"}
-                                name='duration'
-                                value={formData.duration}
-                                placeholder={'e.g. 2h 30m'}
+                                name='endTime'
+                                value={formData.endTime}
                                 onChange={handelOnChange}
 
                             />
@@ -224,20 +223,20 @@ const OrganizeEvents = () => {
                             />
                         </div>
                         <div className="grid gap-2 ">
-                            <Label htmlFor="adress" className={"text-lg"}>
-                                Adress
+                            <Label htmlFor="location" className={"text-lg"}>
+                                location
                             </Label>
                             <Input
                                 type="text"
                                 required
                                 className={"w-full border-gray-400"}
-                                name='adress'
-                                value={formData.adress}
+                                name='location'
+                                value={formData.location}
                                 placeholder={'Gostho Paul Sarani, Maidan, B. B. D. Bagh Kolkata, West Bengal India'}
                                 onChange={handelOnChange}
                             />
                         </div>
-                        <div className='border-gray-400 border-1 rounded-md mt-5'>
+                        <div className='border-gray-400 border-1 h-fit rounded-md mt-5'>
                             <Select value={formData.city}
                                 onValueChange={(value) => setFormData({ ...formData, city: value })}>
                                 <SelectTrigger className="w-full border-gray-300 ">
@@ -264,7 +263,7 @@ const OrganizeEvents = () => {
                                 Ticket Price (INR)
                             </Label>
                             <Input
-                                type="text"
+                                type="number"
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"300"}
@@ -279,7 +278,7 @@ const OrganizeEvents = () => {
                                 Ticket Quantity
                             </Label>
                             <Input
-                                type="text"
+                                type="number"
                                 required
                                 className={"w-full border-gray-400"}
                                 placeholder={"30"}

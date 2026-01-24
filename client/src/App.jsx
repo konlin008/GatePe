@@ -42,7 +42,7 @@ function App() {
         },
         { path: "status-page/:status", element: <OrgRequestStatusPage /> },
         { path: "org-login", element: <OrgLogin /> },
-        { path: "dashboard", element: <Dashboard />, },
+        { path: "organizer-dashboard", element: <Dashboard />, },
         { path: "dashboard/assign-gateMate/:eventId", element: <AssignGateMate /> },
         { path: "new-event", element: <OrganizeEvents /> },
         { path: "dashboard/editEvent/:eventId", element: <EditEvent /> },
