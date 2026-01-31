@@ -78,7 +78,9 @@ export const listNewEvent = async (req, res) => {
 export const getEventsByOrgId = async (req, res) => {
   try {
     const orgId = req.id;
-    const events = await Event.find({ organizer: orgId });
+    const events = await Event.find({
+      organizerId: orgId,
+    });
     if (events?.length === 0)
       return res.status(202).json({
         message: "No Event Listed",

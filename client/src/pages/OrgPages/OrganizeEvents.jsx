@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import axios from 'axios'
 import { Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import {
@@ -44,7 +43,6 @@ const OrganizeEvents = () => {
         image1: '',
         image2: '',
     });
-    const [loading, setLoading] = useState(null)
     const handelOnChange = (e) => {
         const { name, value } = e.target
         setFormData({
@@ -100,11 +98,17 @@ const OrganizeEvents = () => {
     }
     useEffect(() => {
         if (isSuccess) {
-            console.log(data);
+            toast.success('Event Listed Successfully')
+            navigate('/dashboard')
         }
         if (error) {
             if (error.status === 400) {
-                console.log(error.response.data.errors[0].message);
+                if (error.response.data.errors.length >= 0) {
+                    toast.error('All Fields Are Required ');
+                }
+                else {
+                    toast.error(error.response.data.errors[0].message)
+                }
             }
         }
     }, [isSuccess, data, error])
@@ -356,11 +360,11 @@ const OrganizeEvents = () => {
                 </CardContent>
                 <CardFooter>
                     <div className='flex justify-end w-full'>
-                        <Button disabled={loading} type={'submit'} className={"bg-blue-700 hover:bg-blue-800 py-5 px-10 text-md"}
+                        <Button disabled={isPending} type={'submit'} className={"bg-blue-700 hover:bg-blue-800 py-5 px-10 text-md"}
                             onClick={handelSubmit}
                         >
                             {
-                                loading ? <><Loader2 className='animate-spin' /> Please Wait</> : 'Submit'
+                                isPending ? <><Loader2 className='animate-spin' /> Please Wait</> : 'Submit'
                             }
                         </Button>
                     </div>

@@ -7,8 +7,6 @@ import {
   getEventDetails,
   getEventsByOrgId,
   listNewEvent,
-  // orgLogin,
-  // orgRegister,
   removeGateMate,
   updateEventDetails,
 } from "../controllers/org.controller.js";
@@ -17,8 +15,6 @@ import isAuthenticated from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
-// router.post("/register", orgRegister);
-// router.post("/login", orgLogin);
 router.get("/getAllGateMates/:eventId", getAllAssignedGateMate);
 
 router.use(isAuthenticated);

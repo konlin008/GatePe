@@ -12,7 +12,8 @@ const Dashboard = () => {
     const { isSuccess, data, error } = useGetAllListedEvents()
     useEffect(() => {
         if (isSuccess) {
-            setEvents(data?.data?.events)
+            console.log(data);
+            setEvents(data?.events)
         }
 
     }, [isSuccess, data])
