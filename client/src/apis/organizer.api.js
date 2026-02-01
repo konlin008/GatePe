@@ -8,3 +8,15 @@ export const createNewEventApi = async (payload) => {
   const res = await api.post("org/create_new_event", payload);
   return res.data;
 };
+export const getEventDeatilsApi = async (eventId) => {
+  const res = await api.get(`org/get-event-details/${eventId}`);
+  return res.data;
+};
+export const updateEventDetailsApi = async ({ id, data }) => {
+  const res = await api.put(`org/update-event/${id}`, data);
+  return res.data;
+};
+export const assignGateMateApi = async (payload) => {
+  const res = await api.post("org/assignGateMate", payload);
+  return res.data;
+};

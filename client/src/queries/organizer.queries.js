@@ -1,4 +1,9 @@
-import { createNewEventApi, getAllListedEventsApi } from "@/apis/organizer.api";
+import {
+  createNewEventApi,
+  getAllListedEventsApi,
+  getEventDeatilsApi,
+  updateEventDetailsApi,
+} from "@/apis/organizer.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useGetAllListedEvents = () => {
@@ -12,3 +17,19 @@ export const useCreateNewEvent = () => {
     mutationFn: createNewEventApi,
   });
 };
+export const useGetEventDetails = (id) => {
+  return useQuery({
+    queryKey: ["getEventDetails", id],
+    queryFn: () => getEventDeatilsApi(id),
+  });
+};
+export const useUpdateEventDetails = () => {
+  return useMutation({
+    mutationFn: updateEventDetailsApi,
+  });
+};
+export const useAssignGateMate = ()=>{
+  return useMutation({
+    mutationFn:
+  })
+}

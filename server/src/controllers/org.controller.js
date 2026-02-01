@@ -4,6 +4,7 @@ import { hashPassword } from "../../utils/password.js";
 import GateMate from "../../db/gateMate.schema.js";
 import { objectIdSchema } from "../../schemas/inputs.schema.js";
 import { eventInputSchema } from "../../schemas/eventInput.schema.js";
+import User from "../../db/user.schema.js";
 
 export const listNewEvent = async (req, res) => {
   try {
@@ -139,31 +140,6 @@ export const updateEventDetails = async (req, res) => {
         event[key] = req.body[key];
       }
     });
-
-    const files = req.files || {};
-    if (files.image1 || files.image2) {
-      if (files.image1) {
-        const image1PublicId = event.imageUrlLandscape
-          ?.split("/")
-          .pop()
-          .split(".")[0];
-        if (image1PublicId) await deleteMedia(image1PublicId);
-
-        const cloudeResImage1 = await uploadMedia(files.image1[0].path);
-        event.imageUrlLandscape = cloudeResImage1.secure_url;
-      }
-
-      if (files.image2) {
-        const image2PublicId = event.imageUrlPortrait
-          ?.split("/")
-          .pop()
-          .split(".")[0];
-        if (image2PublicId) await deleteMedia(image2PublicId);
-
-        const cloudeResImage2 = await uploadMedia(files.image2[0].path);
-        event.imageUrlPortrait = cloudeResImage2.secure_url;
-      }
-    }
     await event.save();
     return res.status(200).json({
       message: "Event Details updated successfully",
@@ -179,16 +155,26 @@ export const updateEventDetails = async (req, res) => {
 };
 export const assignGateMate = async (req, res) => {
   try {
-    const { email, password, eventId } = req.body;
+    console.log(req.body);
+    const { name, email, password, eventId } = req.body;
+    const result = objectIdSchema.safeParse(eventId);
+    if (!result.success) {
+      const errors = result.error.issues;
+      return res.status(400).json({
+        success: false,
+        errors,
+      });
+    }
+    const parsedEventId = result.data;
     const orgId = req.id;
-    if (!email || !password || !eventId)
+    if (!email || !password || !name)
       return res.status(400).json({
         message: "All Fields are Required",
         success: false,
       });
-    const existingUser = await GateMate.findOne({
+    const existingUser = await User.findOne({
       email,
-      eventId,
+      eventId: parsedEventId,
       organizerId: orgId,
     });
     if (existingUser)
@@ -197,16 +183,17 @@ export const assignGateMate = async (req, res) => {
         success: false,
       });
     const hashedPassword = await hashPassword(password);
-
-    const newMate = await GateMate.create({
+    const newMate = await User.create({
+      name,
       email,
       password: hashedPassword,
-      eventId,
-      organizerId: orgId,
+      eventId: parsedEventId,
+      organizer: orgId,
+      role: "gateMate",
     });
     if (newMate)
       return res.status(202).json({
-        success: true,
+        message: "GateMate Assigned Successfully",
       });
   } catch (error) {
     console.log(error);
@@ -288,7 +275,7 @@ export const addExistingMateToEvent = async (req, res) => {
         message: "Bad Request",
         success: false,
       });
-    const updatedGateMate = await GateMate.findByIdAndUpdate(
+    const updatedGateMate = await user.findByIdAndUpdate(
       gateMateId,
       {
         $addToSet: { eventIds: eventId },

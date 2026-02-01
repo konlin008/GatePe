@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const objectIdSchema = z
-  .string()
+  .string("All Fields are Required")
   .regex(/^[0-9a-fA-F]{24}$/, "Invalid ID");
 export const cityName = z
   .string("City Name Required")

@@ -3,29 +3,21 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-
-import axios from "axios";
+import { useGetEventDetails, useUpdateEventDetails } from "@/queries/organizer.queries";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const EditEvent = () => {
     const { eventId } = useParams();
-    const [isPending, setIsPending] = useState(false);
-
+    const { isSuccess: isGetSuccess, data: getData, error: getError, } = useGetEventDetails(eventId)
+    const { mutate: updateEvent, isPending: isUpdating, isSuccess: isUpdated, data: updatedData, error: updateError } = useUpdateEventDetails()
     const [formData, setFormData] = useState({
         title: "",
         category: "",
@@ -45,64 +37,67 @@ const EditEvent = () => {
         landscape: "",
         portrait: "",
     });
+    const convertTo24Hour = (time) => {
+        if (!time) return "";
 
+        const [timePart, modifier] = time.split(" ");
+        let [hours, minutes] = timePart.split(":");
+
+        hours = parseInt(hours);
+
+        if (modifier === "PM" && hours !== 12) {
+            hours += 12;
+        }
+
+        if (modifier === "AM" && hours === 12) {
+            hours = 0;
+        }
+
+        return `${hours.toString().padStart(2, "0")}:${minutes}`;
+    };
     useEffect(() => {
-        const fetchEvent = async () => {
-            try {
-                const res = await axios.get(
-                    `${import.meta.env.VITE_ORG_API}get-event-details/${eventId}`,
-                    { withCredentials: true }
-                );
-
-                const event = res.data.eventDetails;
-
-                setFormData({
-                    title: event.title || "",
-                    category: event.category || "",
-                    description: event.description || "",
-                    date: event.date?.split("T")[0] || "",
-                    startTime: event.startTime || "",
-                    endTime: event.endTime || "",
-                    venue: event.venue || "",
-                    city: event.city || "",
-                    location: event.location || "",
-                    deadline: event.deadline?.split("T")[0] || "",
-                    ticketPrice: event.ticketPrice || "",
-                    ticketQuantity: event.ticketQuantity || "",
-                });
-
-                setPosters({
-                    landscape: event.imageUrlLandscape,
-                    portrait: event.imageUrlPortrait,
-                });
-            } catch (error) {
-                console.error("Fetch failed:", error);
-            }
-        };
-
-        fetchEvent();
-    }, [eventId]);
+        if (isGetSuccess) {
+            console.log(getData);
+            const event = getData?.eventDetails;
+            setFormData({
+                title: event.title || "",
+                category: event.category || "",
+                description: event.description || "",
+                date: event.date?.split("T")[0] || "",
+                startTime: convertTo24Hour(event.startTime) || "",
+                endTime: convertTo24Hour(event.endTime) || "",
+                venue: event.venue || "",
+                city: event.city || "",
+                location: event.location || "",
+                deadline: event.deadline?.split("T")[0] || "",
+                ticketPrice: event.ticketPrice || "",
+                ticketQuantity: event.ticketQuantity || "",
+            });
+            setPosters({
+                landscape: event.imageUrlLandscape,
+                portrait: event.imageUrlPortrait,
+            });
+        }
+        if (getError) toast.error('Faild To Fetch Event Details');
+    }, [isGetSuccess, getData, getError])
+    useEffect(() => {
+        if (isUpdated) {
+            toast.success(updatedData?.message || 'Event Updated Successfully')
+        }
+        if (updateError) {
+            console.log(updateError);
+        }
+    }, [isUpdated, updatedData, updateError])
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsPending(true);
-
-        try {
-            await axios.put(
-                `${import.meta.env.VITE_ORG_API}update-event/${eventId}`,
-                formData,
-                { withCredentials: true }
-            );
-
-            alert("Event updated successfully ✅");
-        } catch (error) {
-            console.error("Update error:", error);
-        } finally {
-            setIsPending(false);
-        }
+        updateEvent({
+            id: eventId,
+            data: formData,
+        })
     };
 
     return (
@@ -111,7 +106,7 @@ const EditEvent = () => {
                 <CardHeader>
                     <CardTitle className="text-2xl">Edit Event</CardTitle>
                     <CardDescription>
-                        Poster editing is disabled for organizers.
+                        Please make sure all details are accurate before saving changes.
                     </CardDescription>
                 </CardHeader>
 
@@ -148,6 +143,10 @@ const EditEvent = () => {
                                 <Label>End Time</Label>
                                 <Input type="time" name="endTime" value={formData.endTime} onChange={handleChange} />
                             </div>
+                            <div className="grid gap-2">
+                                <Label>Deadline Date</Label>
+                                <Input type="date" name="deadlineDate" value={formData.deadline} onChange={handleChange} />
+                            </div>
 
                             <div className="grid gap-2">
                                 <Label>Venue</Label>
@@ -158,48 +157,40 @@ const EditEvent = () => {
                                 <Label>Location</Label>
                                 <Input name="location" value={formData.location} onChange={handleChange} />
                             </div>
-
-                            <Select
-                                value={formData.city}
-                                onValueChange={(value) =>
-                                    setFormData((prev) => ({ ...prev, city: value }))
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select City" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="delhi">Delhi</SelectItem>
-                                    <SelectItem value="mumbai">Mumbai</SelectItem>
-                                    <SelectItem value="kolkata">Kolkata</SelectItem>
-                                    <SelectItem value="bangalore">Bangalore</SelectItem>
-                                </SelectContent>
-                            </Select>
-
-
                             <div className="col-span-2 grid grid-cols-2 gap-6 mt-8">
+
                                 <div>
                                     <Label>Landscape Poster</Label>
-                                    <img
-                                        src={posters.landscape}
-                                        className="mt-2 h-48 w-full object-contain border rounded"
-                                    />
+                                    {posters.landscape ? (
+                                        <img
+                                            src={posters.landscape}
+                                            className="mt-2 h-48 w-full object-contain border rounded"
+                                        />
+                                    ) : (
+                                        <p className="text-sm text-gray-400 mt-2">No poster available</p>
+                                    )}
                                 </div>
 
                                 <div>
                                     <Label>Portrait Poster</Label>
-                                    <img
-                                        src={posters.portrait}
-                                        className="mt-2 h-48 w-full object-contain border rounded"
-                                    />
+                                    {posters.portrait ? (
+                                        <img
+                                            src={posters.portrait}
+                                            className="mt-2 h-48 w-full object-contain border rounded"
+                                        />
+                                    ) : (
+                                        <p className="text-sm text-gray-400 mt-2">No poster available</p>
+                                    )}
                                 </div>
+
                             </div>
+
 
                         </div>
 
                         <div className="flex justify-end mt-10">
-                            <Button disabled={isPending} className="px-10 py-5">
-                                {isPending ? (
+                            <Button disabled={isUpdating} className="px-10 py-5">
+                                {isUpdating ? (
                                     <>
                                         <Loader2 className="animate-spin mr-2" /> Updating
                                     </>

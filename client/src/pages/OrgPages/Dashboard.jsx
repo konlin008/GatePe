@@ -58,7 +58,7 @@ const Dashboard = () => {
                                     <TableCell>{getEventSatus(event)}</TableCell>
                                     <TableCell>Rs. 0</TableCell>
                                     <TableCell onClick={() => navigate(`/dashboard/editEvent/${event?._id}`)} ><SquarePen size={20} /></TableCell>
-                                    <TableCell>   <Badge className={'cursor-pointer bg-blue-500'} onClick={() => navigate(`assign-gateMate/${event?._id}`)}>Assign GateMate</Badge> </TableCell>
+                                    <TableCell>   <Badge className={'cursor-pointer bg-blue-500'} onClick={() => navigate(`/assign-gateMate/${event?._id}`)}>Assign GateMate</Badge> </TableCell>
                                 </TableRow>
                             )
                         })

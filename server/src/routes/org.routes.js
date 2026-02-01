@@ -27,14 +27,7 @@ router.post(
 
   listNewEvent,
 );
-router.put(
-  "/update-event/:id",
-  upload.fields([
-    { name: "image1", maxCount: 1 },
-    { name: "image2", maxCount: 1 },
-  ]),
-  updateEventDetails,
-);
+router.put("/update-event/:id", updateEventDetails);
 router.get("/get_all_events", getEventsByOrgId);
 router.get("/get-event-details/:id", getEventDetails);
 router.post("/assignGateMate", assignGateMate);

@@ -8,8 +8,10 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAssignGateMate } from '@/queries/organizer.queries';
 
 const AssignGateMate = () => {
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -17,7 +19,7 @@ const AssignGateMate = () => {
     const [availableMates, setAvailableMates] = useState([])
     const { eventId } = useParams()
     const nav = useNavigate()
-
+    const { mutate: assignGateMate, isSuccess, data, error } = useAssignGateMate()
     const fetchGateMates = async () => {
         const res = await axios.get(`${import.meta.env.VITE_ORG_API}getAllGateMates/${eventId}`, { withCredentials: true })
         if (res?.data?.gateMates.length != 0) setGateMates(res.data.gateMates)
@@ -30,11 +32,10 @@ const AssignGateMate = () => {
         e.preventDefault()
         setLoading(true)
         if (email && password) {
-            const res = await axios.post(`${import.meta.env.VITE_ORG_API}assignGateMate`, { email, password, eventId }, { withCredentials: true })
+            const res = await axios.post(`${import.meta.env.VITE_ORG_API}assignGateMate`, { name, email, password, eventId }, { withCredentials: true })
             if (res.data.success) {
                 toast.success(res?.data?.message || "GateMate Assigned")
                 fetchGateMates()
-
             }
         }
         else {
@@ -63,8 +64,8 @@ const AssignGateMate = () => {
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100'>
             <div>
-                <div className='items-center mb-5'>
-                    <div className='border-black border-1 p-2 rounded-full w-fit mb-2 ' onClick={() => nav('/dashboard')} >
+                <div className=' mb-5 flex items-center gap-3'>
+                    <div className='border-black border-1 p-2 rounded-full w-fit ' onClick={() => nav('/dashboard')} >
                         <FaArrowLeft size={20} />
                     </div>
                     <h1 className='font-semibold text-xl border-b-2 border-gray-700 w-fit ml-2'>Assigned Entry Staff</h1>
@@ -108,6 +109,18 @@ const AssignGateMate = () => {
                             </DialogHeader>
 
                             <form className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="Jhon Doe"
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         GateMate Email
