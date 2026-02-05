@@ -58,6 +58,12 @@ const eventSchema = new mongoose.Schema({
     ref: "Org",
     required: true,
   },
+  gateMates: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   imageUrlLandscape: {
     type: String,
     default: "",

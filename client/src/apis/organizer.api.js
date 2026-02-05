@@ -20,3 +20,11 @@ export const assignGateMateApi = async (payload) => {
   const res = await api.post("org/assignGateMate", payload);
   return res.data;
 };
+export const getAllGateMatesApi = async (eventId) => {
+  const res = await api.get(`org/getAllGateMates/${eventId}`);
+  return res.data;
+};
+export const removeGateMateApi = async (eventId, gateMateId) => {
+  const res = await api.delete(`org/events/:eventId/gatemates/:gateMateId`);
+  return res.data;
+};

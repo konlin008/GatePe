@@ -31,7 +31,7 @@ router.put("/update-event/:id", updateEventDetails);
 router.get("/get_all_events", getEventsByOrgId);
 router.get("/get-event-details/:id", getEventDetails);
 router.post("/assignGateMate", assignGateMate);
-router.delete("/removeGateMate/:gateMateId", removeGateMate);
+router.delete("/events/:eventId/gatemates/:gateMateId", removeGateMate);
 router.get("/available-gateMate/:eventId", availableGateMate);
 router.patch("/add-existing-mate-to-event", addExistingMateToEvent);
 

@@ -5,6 +5,7 @@ import GateMate from "../../db/gateMate.schema.js";
 import { objectIdSchema } from "../../schemas/inputs.schema.js";
 import { eventInputSchema } from "../../schemas/eventInput.schema.js";
 import User from "../../db/user.schema.js";
+import { registerSchema } from "../../schemas/auth.schema.js";
 
 export const listNewEvent = async (req, res) => {
   try {
@@ -155,83 +156,128 @@ export const updateEventDetails = async (req, res) => {
 };
 export const assignGateMate = async (req, res) => {
   try {
-    console.log(req.body);
     const { name, email, password, eventId } = req.body;
+    const registerSchemaResult = registerSchema.safeParse(req.body);
+    if (!registerSchemaResult.success) {
+      return res.status(400).json({
+        errors: registerSchemaResult.error.issues,
+      });
+    }
+
     const result = objectIdSchema.safeParse(eventId);
     if (!result.success) {
-      const errors = result.error.issues;
       return res.status(400).json({
         success: false,
-        errors,
+        errors: result.error.issues,
       });
     }
     const parsedEventId = result.data;
     const orgId = req.id;
-    if (!email || !password || !name)
+
+    if (!name || !email || !password) {
       return res.status(400).json({
-        message: "All Fields are Required",
         success: false,
+        message: "All fields are required",
       });
-    const existingUser = await User.findOne({
-      email,
-      eventId: parsedEventId,
-      organizerId: orgId,
+    }
+
+    const event = await Event.findById(parsedEventId);
+    if (!event) {
+      return res.status(404).json({
+        message: "Event not found",
+      });
+    }
+
+    let gateMate = await User.findOne({ email });
+
+    if (gateMate) {
+      const alreadyAssigned = event.gateMates.includes(gateMate._id);
+      if (alreadyAssigned) {
+        return res.status(400).json({
+          success: false,
+          message: "GateMate already assigned to this event",
+        });
+      }
+    } else {
+      const hashedPassword = await hashPassword(password);
+
+      gateMate = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        organizer: orgId,
+        role: "gateMate",
+      });
+    }
+
+    await Event.findByIdAndUpdate(parsedEventId, {
+      $addToSet: { gateMates: gateMate._id },
     });
-    if (existingUser)
-      return res.status(400).json({
-        message: "GateMate already assigned to this event",
-        success: false,
-      });
-    const hashedPassword = await hashPassword(password);
-    const newMate = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      eventId: parsedEventId,
-      organizer: orgId,
-      role: "gateMate",
+
+    return res.status(201).json({
+      success: true,
+      message: "GateMate assigned successfully",
+      gateMateId: gateMate._id,
     });
-    if (newMate)
-      return res.status(202).json({
-        message: "GateMate Assigned Successfully",
-      });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({
-      message: "Internal Server Error",
       success: false,
+      message: "Internal Server Error",
     });
   }
 };
+
 export const getAllAssignedGateMate = async (req, res) => {
   try {
     const { eventId } = req.params;
-    if (!eventId)
-      return res.status(400).json({ message: "Bad Request", success: false });
-    const gateMates = await GateMate.find({ eventId }).select("-password");
-    if (!gateMates) return res.status(202).json({});
+    if (!eventId) return res.status(400).json({ message: "Bad Request" });
+    const event = await Event.findById(eventId)
+      .populate({
+        path: "gateMates",
+        select: "name role email",
+      })
+      .select("gateMates");
+    if (!event?.gateMates) return res.status(202).json([]);
     return res.status(200).json({
-      gateMates,
-      success: true,
+      gateMates: event.gateMates,
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       message: "Internal Server Error",
-      success: false,
     });
   }
 };
 export const removeGateMate = async (req, res) => {
   try {
-    const { gateMateId } = req.params;
-    if (!gateMateId)
+    const { eventId, gateMateId } = req.params;
+    if (!eventId || !gateMateId)
       return res.status(400).json({ message: "Bad Request", success: false });
-    const deletedMate = await GateMate.deleteOne({ _id: gateMateId });
-    if (deletedMate.deletedCount === 1)
+    const deletedMate = await Event.findByIdAndUpdate(
+      eventId,
+      {
+        $pull: {
+          gateMates: gateMateId,
+        },
+      },
+      {
+        new: true,
+      },
+    );
+    await User.findOneAndUpdate(
+      { _id: gateMateId, role: "gateMate" },
+      { role: "user" },
+    );
+    if (!deletedMate) {
+      return res.status(404).json({
+        message: "Event not found",
+        success: false,
+      });
+    }
+    if (deletedMate)
       return res.status(200).json({
         message: "GateMate Removed Succesfully",
-        success: true,
       });
   } catch (error) {
     console.log(error);

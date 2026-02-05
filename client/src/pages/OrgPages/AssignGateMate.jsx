@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAssignGateMate } from '@/queries/organizer.queries';
+import { useAllgateMates, useAssignGateMate, useRemoveGateMates } from '@/queries/organizer.queries';
 
 const AssignGateMate = () => {
     const [name, setName] = useState('')
@@ -19,38 +19,47 @@ const AssignGateMate = () => {
     const [availableMates, setAvailableMates] = useState([])
     const { eventId } = useParams()
     const nav = useNavigate()
-    const { mutate: assignGateMate, isSuccess, data, error } = useAssignGateMate()
-    const fetchGateMates = async () => {
-        const res = await axios.get(`${import.meta.env.VITE_ORG_API}getAllGateMates/${eventId}`, { withCredentials: true })
-        if (res?.data?.gateMates.length != 0) setGateMates(res.data.gateMates)
-    }
-
+    const {
+        mutate: assignGateMate,
+        isSuccess: isGateMateAssigned,
+        data: assignedGateMate,
+        error: assignGateMateError,
+    } = useAssignGateMate();
+    const {
+        isSuccess: isAllGateMates,
+        data: allGateMates,
+        error: allGateMatesError
+    } = useAllgateMates(eventId)
+    const { mutate: removeGateMate, isSuccess: isGateMateRemoved, error: errorRemovingGateMate } = useRemoveGateMates()
     useEffect(() => {
-        fetchGateMates()
-    }, [eventId])
+        if (isAllGateMates) {
+            setGateMates(allGateMates.data.gateMates)
+        }
+        if (allGateMatesError) {
+            console.error('Error Geting All GateMates');
+        }
+    }, [isAllGateMates, allGateMates, allGateMatesError])
     const handelSubmit = async (e) => {
         e.preventDefault()
-        setLoading(true)
-        if (email && password) {
-            const res = await axios.post(`${import.meta.env.VITE_ORG_API}assignGateMate`, { name, email, password, eventId }, { withCredentials: true })
-            if (res.data.success) {
-                toast.success(res?.data?.message || "GateMate Assigned")
-                fetchGateMates()
-            }
-        }
-        else {
+        if (!name || !email || !password) {
             toast.error("All Fields Are Required")
         }
-        setLoading(false)
-    }
-    const removeGateMate = async (gateMateId) => {
-        const res = await axios.delete(`${import.meta.env.VITE_ORG_API}removeGateMate/${gateMateId}`, { withCredentials: true })
-        if (res?.data?.success) {
-            toast.success(res?.data?.message || "GateMate Removed")
-            fetchGateMates();
+        else {
+            assignGateMate({ name, email, password, eventId })
         }
-
     }
+    useEffect(() => {
+        if (isGateMateAssigned) {
+            toast.success(assignedGateMate.message)
+        }
+        if (assignGateMateError) {
+            if (assignGateMateError.status === 400) {
+                console.log(assignGateMateError);
+                toast.error(assignGateMateError?.response?.data?.message || 'Invalid Inputs');
+            }
+        }
+    }, [isGateMateAssigned, assignedGateMate, assignGateMateError])
+
     const nonAssignedMates = async () => {
         const res = await axios.get(`${import.meta.env.VITE_ORG_API}available-gateMate/${eventId}`, { withCredentials: true })
         if (res.data) {
@@ -75,9 +84,11 @@ const AssignGateMate = () => {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[200px]">No.</TableHead>
+                            <TableHead className="text-right">Name</TableHead>
                             <TableHead> Email </TableHead>
-
                             <TableHead className="text-right">Action</TableHead>
+
+
                         </TableRow>
                     </TableHeader>
                     {gateMates.map((gateMate, index) => {
@@ -85,9 +96,10 @@ const AssignGateMate = () => {
                             <TableBody key={gateMate._id}>
                                 <TableRow>
                                     <TableCell className="font-medium">{index + 1}</TableCell>
+                                    <TableCell>{gateMate.name}</TableCell>
                                     <TableCell>{gateMate.email}</TableCell>
                                     <TableCell className="text-right">
-                                        <Badge onClick={() => removeGateMate(gateMate._id)} className={'bg-red-700 cursor-pointer'}>Remove</Badge>
+                                        <Badge onClick={() => removeGateMate(eventId, gateMate._id)} className={'bg-red-700 cursor-pointer'}>Remove</Badge>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
