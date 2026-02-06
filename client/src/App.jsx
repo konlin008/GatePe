@@ -47,7 +47,7 @@ function App() {
         { path: "payment-success", element: <SuccessPage /> },
         { path: "payment-cancel", element: <CancelPage /> },
         { path: "/gateMate", element: <GateMateDashboard /> },
-        { path: "/GateMate/:gateMateId/eventPage/:eventId", element: <GateMateEventDetails /> }
+        { path: "/gateMate/:eventId", element: <GateMateEventDetails /> }
       ],
     },
     { path: "/login", element: <LoginPage /> },

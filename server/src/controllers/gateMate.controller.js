@@ -1,27 +1,16 @@
-import GateMate from "../../db/gateMate.schema.js";
 import Event from "../../db/event.schema.js";
 import Ticket from "../../db/ticket.schema.js";
 import mongoose from "mongoose";
 
-export const fetchDetailsForGateMate = async (req, res) => {
+export const assignedEvents = async (req, res) => {
   try {
-    const { gateMateId } = req.params;
-    if (!gateMateId)
-      return res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
-    const gateMate = await GateMate.findOne({ _id: gateMateId })
-      .select("-password")
-      .populate({ path: "eventId", select: "title date startTime endTime" });
-    if (!gateMate)
-      return res.status(404).json({
-        message: "No GateMate Details Found",
-        success: false,
-      });
+    const gateMateId = req.id;
+    console.log(gateMateId);
+    const events = await Event.find({
+      gateMates: { $in: [gateMateId] },
+    }).select("_id title date startTime endTime");
     return res.status(200).json({
-      gateMate,
-      success: true,
+      events,
     });
   } catch (error) {
     console.log(error);
@@ -68,7 +57,7 @@ export const verifyTicket = async (req, res) => {
     const checkedInTicketDetails = await Ticket.findOneAndUpdate(
       { _id: ticketId, status: { $ne: "CHECKED_IN" } },
       { status: "CHECKED_IN" },
-      { new: true }
+      { new: true },
     );
     if (!checkedInTicketDetails)
       return res.status(400).json({

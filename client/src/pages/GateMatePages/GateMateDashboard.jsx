@@ -1,30 +1,25 @@
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import axios from 'axios';
+import { useAssignedEvents } from '@/queries/gateMate.queries';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import { FaArrowLeft, FaVolumeHigh } from "react-icons/fa6";
-import { useNavigate, useParams } from 'react-router-dom';
+import { FaArrowLeft } from "react-icons/fa6";
+import { useNavigate } from 'react-router-dom';
 
 const GateMateDashboard = () => {
     const nav = useNavigate()
     const [events, setEvents] = useState([])
-    const param = useParams()
-    const { gateMateId } = param
-    console.log(gateMateId);
-    const fetchGateMateDetails = async () => {
-        try {
-            const res = await axios.get(
-                `${import.meta.env.VITE_GATEMATE_API}details/${gateMateId}`
-            );
-            setEvents(res?.data?.gateMate?.eventId || []);
-        } catch (error) {
-            console.error("Failed to fetch gate mate details", error);
-        }
-    }
+    const { isSuccess, data, error } = useAssignedEvents()
+
     useEffect(() => {
-        fetchGateMateDetails()
-    }, [gateMateId])
+        if (isSuccess) {
+            setEvents(data.events)
+        }
+        if (error) {
+            console.log(error?.response?.data?.message);
+        }
+    }, [isSuccess, data, error])
+
     const getEventStatus = (date, startTime, endTime) => {
         const now = new Date();
 
@@ -86,7 +81,7 @@ const GateMateDashboard = () => {
                                                     {status}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell onClick={() => nav(`/gateMate/${gateMateId}/eventPage/${event._id}`)} className="flex justify-end"> <SquareArrowOutUpRight /></TableCell>
+                                            <TableCell onClick={() => nav(`/gateMate/${event._id}`)} className="flex justify-end"> <SquareArrowOutUpRight /></TableCell>
                                         </TableRow>
                                     )
                                 })

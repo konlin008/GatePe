@@ -32,7 +32,7 @@ const NavbarFooter = () => {
         }
         if (isSuccess) {
             if (data?.role === 'gateMate') {
-                navigate('organizer-dashboard')
+                navigate('gateMate')
             }
         }
     }

@@ -2,26 +2,21 @@ import Scanner from '@/components/Scanner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { useEventDetails } from '@/queries/gateMate.queries'
 import axios from 'axios'
 import { CalendarDays, ChartBar, Clock, MapPin, Tags, UserRound, } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { data, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 const GateMateEventDetails = () => {
-    const { gateMateId } = useParams()
     const { eventId } = useParams()
     const [eventDetails, setEventDetails] = useState()
     const [scannedCode, setScannedCode] = useState(null)
     const [ticketdetails, setTicketDetails] = useState(null)
     const [error, setError] = useState()
+    const { isSuccess: isEventDetails, data: eventDetailsData, error: eventDetailsError } = useEventDetails(eventId)
 
-
-    const fetchEventDetails = async () => {
-        const res = await axios.get(`${import.meta.env.VITE_GATEMATE_API}event-details/${eventId}`, { withCredentials: true })
-        console.log(res?.data);
-        if (res.data) setEventDetails(res?.data?.eventDetails)
-    }
     const fetchTicketDetails = async () => {
         if (!scannedCode) return
         try {
@@ -36,8 +31,13 @@ const GateMateEventDetails = () => {
         }
     }
     useEffect(() => {
-        fetchEventDetails()
-    }, [eventId])
+        if (isEventDetails) {
+            setEventDetails(eventDetailsData.eventDetails)
+        }
+        if (eventDetailsError) {
+            console.log(eventDetailsError);
+        }
+    }, [isEventDetails, eventDetailsData, eventDetailsError])
     useEffect(() => {
         fetchTicketDetails()
     }, [scannedCode])
