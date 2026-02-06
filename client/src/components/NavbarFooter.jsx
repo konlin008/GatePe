@@ -8,7 +8,7 @@ const NavbarFooter = () => {
     const [active, setActive] = useState("For You");
     const navigate = useNavigate()
     const { user } = useUserStore()
-    const { isSuccess, data, } = useRole(user?.isLoggedIn)
+    const { isSuccess, data } = useRole(user?.isLoggedIn)
 
     const organizerHandler = () => {
         if (!user.isLoggedIn) {
@@ -26,7 +26,16 @@ const NavbarFooter = () => {
             }
         }
     }
-
+    const gateMateHandler = () => {
+        if (!user.isLoggedIn) {
+            navigate('/login')
+        }
+        if (isSuccess) {
+            if (data?.role === 'gateMate') {
+                navigate('organizer-dashboard')
+            }
+        }
+    }
     const onClickHandler = (tabName) => {
         if (!location) {
             alert("Select Location")
@@ -101,7 +110,7 @@ const NavbarFooter = () => {
                     Organizer
                 </h2>
                 <h2
-                    onClick={() => onClickHandler("GateMate")}
+                    onClick={gateMateHandler}
                     className={
                         active === "GateMate"
                             ? "text-gray-500 hover:text-gray-900 cursor-pointer border-b-2 border-gray-500"

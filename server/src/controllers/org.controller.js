@@ -231,8 +231,14 @@ export const assignGateMate = async (req, res) => {
 export const getAllAssignedGateMate = async (req, res) => {
   try {
     const { eventId } = req.params;
-    if (!eventId) return res.status(400).json({ message: "Bad Request" });
-    const event = await Event.findById(eventId)
+    const eventResult = objectIdSchema.safeParse(eventId);
+    if (!eventResult.success) {
+      return res.status(400).json({
+        message: "Invalid EventId",
+      });
+    }
+    const parsedEventId = eventResult.data;
+    const event = await Event.findById(parsedEventId)
       .populate({
         path: "gateMates",
         select: "name role email",
@@ -252,13 +258,28 @@ export const getAllAssignedGateMate = async (req, res) => {
 export const removeGateMate = async (req, res) => {
   try {
     const { eventId, gateMateId } = req.params;
-    if (!eventId || !gateMateId)
-      return res.status(400).json({ message: "Bad Request", success: false });
+
+    const eventResult = objectIdSchema.safeParse(eventId);
+    if (!eventResult.success) {
+      return res.status(400).json({
+        message: "Invalid EventId",
+      });
+    }
+
+    const gateMateResult = objectIdSchema.safeParse(gateMateId);
+    if (!gateMateResult.success) {
+      return res.status(400).json({
+        message: "Invalid GateMateId",
+      });
+    }
+
+    const parsedEventId = eventResult.data;
+    const parsedGateMateId = gateMateResult.data;
     const deletedMate = await Event.findByIdAndUpdate(
-      eventId,
+      parsedEventId,
       {
         $pull: {
-          gateMates: gateMateId,
+          gateMates: parsedGateMateId,
         },
       },
       {
@@ -289,20 +310,13 @@ export const removeGateMate = async (req, res) => {
 };
 export const availableGateMate = async (req, res) => {
   try {
-    const { eventId } = req.params;
     const organizerId = req.id;
-    const availableGateMate = await GateMate.find({
-      organizerId,
-      $or: [{ eventId: { $ne: eventId } }, { eventId: { $exists: false } }],
+    const availableGateMate = await User.find({
+      organizer: organizerId,
+      role: "gateMate",
     });
-    if (!availableGateMate.length === 0)
-      return res.status(200).json({
-        message: "No GateMate Left To be Assigned",
-        success: true,
-      });
     return res.status(200).json({
       GateMates: availableGateMate,
-      success: true,
     });
   } catch (error) {
     console.log(error);
@@ -315,24 +329,39 @@ export const availableGateMate = async (req, res) => {
 export const addExistingMateToEvent = async (req, res) => {
   try {
     const { eventId, gateMateId } = req.body;
-    console.log(eventId, gateMateId);
-    if (!eventId || !gateMateId)
+    const eventResult = objectIdSchema.safeParse(eventId);
+    if (!eventResult.success) {
       return res.status(400).json({
-        message: "Bad Request",
-        success: false,
+        message: "Invalid EventId",
       });
-    const updatedGateMate = await user.findByIdAndUpdate(
-      gateMateId,
-      {
-        $addToSet: { eventIds: eventId },
-      },
-      { new: true },
-    );
-    if (updatedGateMate)
-      return res.status(200).json({
-        message: "GateMate Assigned",
-        success: true,
+    }
+
+    const gateMateResult = objectIdSchema.safeParse(gateMateId);
+    if (!gateMateResult.success) {
+      return res.status(400).json({
+        message: "Invalid GateMateId",
       });
+    }
+
+    const parsedEventId = eventResult.data;
+    const parsedGateMateId = gateMateResult.data;
+    const existingGateMate = await Event.exists({
+      _id: parsedEventId,
+      gateMates: { $in: [parsedGateMateId] },
+    });
+    if (existingGateMate) {
+      return res.status(409).json({
+        message: "GateMate Already Assigned to This Event",
+      });
+    } else {
+      const updatedEvent = await Event.findByIdAndUpdate(parsedEventId, {
+        $addToSet: { gateMates: parsedGateMateId },
+      });
+      if (updatedEvent)
+        return res.status(200).json({
+          message: "GateMate Assigned Successfully",
+        });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({

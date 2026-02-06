@@ -24,7 +24,15 @@ export const getAllGateMatesApi = async (eventId) => {
   const res = await api.get(`org/getAllGateMates/${eventId}`);
   return res.data;
 };
-export const removeGateMateApi = async (eventId, gateMateId) => {
-  const res = await api.delete(`org/events/:eventId/gatemates/:gateMateId`);
+export const removeGateMateApi = async ({ eventId, gateMateId }) => {
+  const res = await api.delete(`org/events/${eventId}/gatemates/${gateMateId}`);
+  return res.data;
+};
+export const availableGateMateApi = async () => {
+  const res = await api.get(`org/available-gateMate`);
+  return res.data;
+};
+export const addExistingGateMate = async (payload) => {
+  const res = await api.patch("org/add-existing-mate-to-event", payload);
   return res.data;
 };

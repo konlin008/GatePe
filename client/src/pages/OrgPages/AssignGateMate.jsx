@@ -3,42 +3,37 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { IoMdAdd } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa6";
-
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAllgateMates, useAssignGateMate, useRemoveGateMates } from '@/queries/organizer.queries';
+import { useAddExistingGateMate, useAllgateMates, useAssignGateMate, useAvailableGateMates, useRemoveGateMates } from '@/queries/organizer.queries';
 
 const AssignGateMate = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [loading, setLoading] = useState(false)
     const [gateMates, setGateMates] = useState([])
     const [availableMates, setAvailableMates] = useState([])
+
     const { eventId } = useParams()
     const nav = useNavigate()
-    const {
-        mutate: assignGateMate,
-        isSuccess: isGateMateAssigned,
-        data: assignedGateMate,
-        error: assignGateMateError,
-    } = useAssignGateMate();
-    const {
-        isSuccess: isAllGateMates,
-        data: allGateMates,
-        error: allGateMatesError
-    } = useAllgateMates(eventId)
+
+    const { mutate: assignGateMate, isSuccess: isGateMateAssigned, data: assignedGateMate, error: assignGateMateError, isPending } = useAssignGateMate();
+    const { isSuccess: isAllGateMates, data: allGateMates, error: allGateMatesError } = useAllgateMates(eventId)
     const { mutate: removeGateMate, isSuccess: isGateMateRemoved, error: errorRemovingGateMate } = useRemoveGateMates()
+    const { data: availableGateMates, isSuccess: isAvailableGateMates, refetch: fetchAvailableGateMates, error: availableGateMatesError } = useAvailableGateMates()
+    const { mutate: addExistingGateMate, isSuccess: isAddedExistingGateMate, data: addedExistingGateMate, error: addExistingGateMateError } = useAddExistingGateMate()
+
     useEffect(() => {
         if (isAllGateMates) {
-            setGateMates(allGateMates.data.gateMates)
+            console.log(allGateMates);
+            setGateMates(allGateMates?.gateMates)
         }
         if (allGateMatesError) {
-            console.error('Error Geting All GateMates');
+            console.log(allGateMatesError);
         }
     }, [isAllGateMates, allGateMates, allGateMatesError])
+
     const handelSubmit = async (e) => {
         e.preventDefault()
         if (!name || !email || !password) {
@@ -61,20 +56,43 @@ const AssignGateMate = () => {
     }, [isGateMateAssigned, assignedGateMate, assignGateMateError])
 
     const nonAssignedMates = async () => {
-        const res = await axios.get(`${import.meta.env.VITE_ORG_API}available-gateMate/${eventId}`, { withCredentials: true })
-        if (res.data) {
-            setAvailableMates(res?.data?.GateMates)
+        fetchAvailableGateMates()
+    }
+    useEffect(() => {
+        if (isAvailableGateMates) {
+            console.log(availableGateMates);
+            setAvailableMates(availableGateMates.GateMates)
         }
-    }
+        if (availableGateMatesError) {
+            console.log(availableGateMatesError);
+        }
+    }, [isAvailableGateMates, availableGateMates, availableGateMatesError])
+
     const addMate = async (gateMateId) => {
-        const res = await axios.patch(`${import.meta.env.VITE_ORG_API}add-existing-mate-to-event`, { eventId, gateMateId }, { withCredentials: true })
-        if (res.data) console.log(res?.data);
+        addExistingGateMate({ eventId, gateMateId })
     }
+    useEffect(() => {
+        if (isAddedExistingGateMate) {
+            toast.success(addedExistingGateMate.message)
+        }
+        if (addExistingGateMateError) {
+            toast.error(addExistingGateMateError.response.data.message);
+        }
+    }, [isAddedExistingGateMate, addedExistingGateMate, addExistingGateMateError])
+    useEffect(() => {
+        if (isGateMateRemoved) {
+            toast.success("GateMate Removed Successfully")
+        }
+        if (errorRemovingGateMate) {
+            toast.error('Error Removing GateMate')
+        }
+    }, [isGateMateRemoved, errorRemovingGateMate])
+
     return (
         <div className='min-h-screen px-60 py-20 bg-gradient-to-b from-blue-100 via-white to-blue-100'>
             <div>
                 <div className=' mb-5 flex items-center gap-3'>
-                    <div className='border-black border-1 p-2 rounded-full w-fit ' onClick={() => nav('/dashboard')} >
+                    <div className='border-black border-1 p-2 rounded-full w-fit ' onClick={() => nav('/organizer-dashboard')} >
                         <FaArrowLeft size={20} />
                     </div>
                     <h1 className='font-semibold text-xl border-b-2 border-gray-700 w-fit ml-2'>Assigned Entry Staff</h1>
@@ -84,27 +102,27 @@ const AssignGateMate = () => {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[200px]">No.</TableHead>
-                            <TableHead className="text-right">Name</TableHead>
+                            <TableHead >Name</TableHead>
                             <TableHead> Email </TableHead>
                             <TableHead className="text-right">Action</TableHead>
 
 
                         </TableRow>
                     </TableHeader>
-                    {gateMates.map((gateMate, index) => {
-                        return (
-                            <TableBody key={gateMate._id}>
-                                <TableRow>
+                    <TableBody >
+                        {gateMates?.map((gateMate, index) => {
+                            return (
+                                <TableRow key={gateMate._id}>
                                     <TableCell className="font-medium">{index + 1}</TableCell>
                                     <TableCell>{gateMate.name}</TableCell>
                                     <TableCell>{gateMate.email}</TableCell>
                                     <TableCell className="text-right">
-                                        <Badge onClick={() => removeGateMate(eventId, gateMate._id)} className={'bg-red-700 cursor-pointer'}>Remove</Badge>
+                                        <Badge onClick={() => removeGateMate({ eventId, gateMateId: gateMate?._id })} className={'bg-red-700 cursor-pointer'}>Remove</Badge>
                                     </TableCell>
                                 </TableRow>
-                            </TableBody>
-                        )
-                    })}
+                            )
+                        })}
+                    </TableBody>
                 </Table>
                 <div className=' flex justify-end gap-5'>
                     <Dialog>
@@ -161,7 +179,7 @@ const AssignGateMate = () => {
                                     type="submit"
                                     className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition"
                                     onClick={handelSubmit}
-                                    disabled={loading}
+                                    disabled={isPending}
                                 >
                                     Assign GateMate
                                 </button>
@@ -183,22 +201,25 @@ const AssignGateMate = () => {
                                 <TableCaption>A list of All Available GateMates </TableCaption>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead> Name </TableHead>
                                         <TableHead> Email </TableHead>
                                         <TableHead className="text-right">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
-                                {availableMates.map((gateMate) => {
-                                    return (
-                                        <TableBody key={gateMate._id}>
-                                            <TableRow>
+                                <TableBody >
+                                    {availableMates.map((gateMate) => {
+                                        return (
+                                            <TableRow key={gateMate._id}>
+                                                <TableCell>{gateMate.name}</TableCell>
                                                 <TableCell>{gateMate.email}</TableCell>
                                                 <TableCell className="flex justify-end" onClick={() => addMate(gateMate._id)}>
                                                     <IoMdAdd size={20} />
                                                 </TableCell>
                                             </TableRow>
-                                        </TableBody>
-                                    )
-                                })}
+                                        )
+                                    })}
+                                </TableBody>
+
                             </Table>
                         </DialogContent>
                     </Dialog>

@@ -1,5 +1,7 @@
 import {
+  addExistingGateMate,
   assignGateMateApi,
+  availableGateMateApi,
   createNewEventApi,
   getAllGateMatesApi,
   getAllListedEventsApi,
@@ -8,7 +10,6 @@ import {
   updateEventDetailsApi,
 } from "@/apis/organizer.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { eventNames } from "node:process";
 
 export const useGetAllListedEvents = () => {
   return useQuery({
@@ -46,5 +47,17 @@ export const useAllgateMates = (eventId) => {
 export const useRemoveGateMates = () => {
   return useMutation({
     mutationFn: removeGateMateApi,
+  });
+};
+export const useAvailableGateMates = () => {
+  return useQuery({
+    queryKey: ["availableGateMates"],
+    queryFn: availableGateMateApi,
+    enabled: false,
+  });
+};
+export const useAddExistingGateMate = () => {
+  return useMutation({
+    mutationFn: addExistingGateMate,
   });
 };

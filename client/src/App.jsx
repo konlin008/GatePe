@@ -46,7 +46,7 @@ function App() {
         { path: "dashboard/editEvent/:eventId", element: <EditEvent /> },
         { path: "payment-success", element: <SuccessPage /> },
         { path: "payment-cancel", element: <CancelPage /> },
-        { path: "/GateMate/:gateMateId", element: <GateMateDashboard /> },
+        { path: "/gateMate", element: <GateMateDashboard /> },
         { path: "/GateMate/:gateMateId/eventPage/:eventId", element: <GateMateEventDetails /> }
       ],
     },

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import generateAccessToken from "../../utils/generateAccessToke.js";
 import generateRefreshToken from "../../utils/generateRefereshToken.js";
 import jwt from "jsonwebtoken";
+import { z } from "zod";
 
 export const register = async (req, res) => {
   try {

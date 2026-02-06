@@ -54,7 +54,7 @@ const Dashboard = () => {
                             return (
                                 <TableRow key={event._id}>
                                     <TableCell>{event.title}</TableCell>
-                                    <TableCell>{event.catagory}</TableCell>
+                                    <TableCell>{event.category}</TableCell>
                                     <TableCell>{getEventSatus(event)}</TableCell>
                                     <TableCell>Rs. 0</TableCell>
                                     <TableCell onClick={() => navigate(`/dashboard/editEvent/${event?._id}`)} ><SquarePen size={20} /></TableCell>

@@ -32,7 +32,7 @@ router.get("/get_all_events", getEventsByOrgId);
 router.get("/get-event-details/:id", getEventDetails);
 router.post("/assignGateMate", assignGateMate);
 router.delete("/events/:eventId/gatemates/:gateMateId", removeGateMate);
-router.get("/available-gateMate/:eventId", availableGateMate);
+router.get("/available-gateMate", availableGateMate);
 router.patch("/add-existing-mate-to-event", addExistingMateToEvent);
 
 export default router;
