@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useEventDetails } from '@/queries/gateMate.queries'
+import { useGetTicketDetails } from '@/queries/ticket.queries'
 import axios from 'axios'
 import { CalendarDays, ChartBar, Clock, MapPin, Tags, UserRound, } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
@@ -13,34 +14,39 @@ const GateMateEventDetails = () => {
     const { eventId } = useParams()
     const [eventDetails, setEventDetails] = useState()
     const [scannedCode, setScannedCode] = useState(null)
-    const [ticketdetails, setTicketDetails] = useState(null)
+    const [ticketDetailsState, setTicketDetailsState] = useState(null);
     const [error, setError] = useState()
     const { isSuccess: isEventDetails, data: eventDetailsData, error: eventDetailsError } = useEventDetails(eventId)
+    const {
+        isSuccess: isTicketDetailsSuccess,
+        data: ticketDetails,
+        error: ticketDetailsError,
+        refetch: refetchTicketDetails,
+    } = useGetTicketDetails();
 
     const fetchTicketDetails = async () => {
         if (!scannedCode) return
-        try {
-            const res = await axios.get(`${import.meta.env.VITE_TICKET_API}ticketdetails-gateMate/${scannedCode}/${eventId}`)
-            if (res?.data?.success) {
-                setTicketDetails(res?.data?.ticketDetails)
-                return
-            }
-        } catch (error) {
-            if (error.status === 404) setError('Invalid Qr')
-            if (error.status === "false") setError(error?.response?.message)
-        }
+        refetchTicketDetails({ scannedCode, eventId })
     }
     useEffect(() => {
         if (isEventDetails) {
             setEventDetails(eventDetailsData.eventDetails)
         }
         if (eventDetailsError) {
-            console.log(eventDetailsError);
+            toast.error("Error Fetching Event Details")
         }
     }, [isEventDetails, eventDetailsData, eventDetailsError])
     useEffect(() => {
         fetchTicketDetails()
     }, [scannedCode])
+    useEffect(() => {
+        if (isTicketDetailsSuccess) {
+            setTicketDetailsState(ticketDetails.ticketDetails)
+        }
+        if (ticketDetailsError) {
+            console.log(ticketDetailsError);
+        }
+    }, [isTicketDetailsSuccess, ticketDetails, ticketDetailsError])
     const verifyTicket = async () => {
         try {
             console.log({ ticketdetails: ticketdetails });

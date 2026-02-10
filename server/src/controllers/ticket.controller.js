@@ -14,7 +14,7 @@ export const ticketDetails = async (req, res) => {
       .select("-userId -__v")
       .populate(
         "eventId",
-        "title location startTime endTime imageUrlPortrait date"
+        "title location startTime endTime imageUrlPortrait date",
       );
     if (!ticketDetails)
       return res.status(404).json({
@@ -61,7 +61,9 @@ export const ticketDetailsForGateMate = async (req, res) => {
       !mongoose.Types.ObjectId.isValid(ticketId) ||
       !mongoose.Types.ObjectId.isValid(eventId)
     ) {
-      return res.status(400).json({ message: "Invalid QR", success: false });
+      return res
+        .status(400)
+        .json({ message: "Invalid QR or Event Id ", success: false });
     }
 
     const ticketDetails = await Ticket.findOne({
